@@ -17,7 +17,7 @@ export default function Login() {
       </h1>
 
       <form
-        className="animate__animated animate__fadeInLeftBig bg-slate-400 border-opacity-50 rounded p-5 w-[700px] mx-auto"
+        className="animate__animated animate__fadeInLeftBig bg-slate-400 border-opacity-50 rounded p-5 w-full max-w-[700px] mx-auto"
         onSubmit={handleSubmit(onSubmit)}
       >
         <div className="mb-6">
@@ -30,7 +30,7 @@ export default function Login() {
           <input
             type="text"
             id="username"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
             placeholder="name@flowbite.com"
             required
             {...register("username")}
