@@ -10,7 +10,7 @@ export default function CreateUser() {
     console.log(data);
   };
   return (
-    <div className="min-h-screen flex items-center">
+    <div className="min-h-screen flex items-center container mx-auto">
       <form
         className="animate__animated animate__fadeInLeftBig bg-neutral-50 border-opacity-50 rounded p-5 w-full max-w-[700px] mx-auto shadow-sm h-screen md:h-[550px]"
         onSubmit={handleSubmit(onSubmit)}
