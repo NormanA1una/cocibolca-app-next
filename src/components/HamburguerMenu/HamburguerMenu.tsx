@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 export default function HamburguerMenu() {
@@ -41,29 +42,25 @@ export default function HamburguerMenu() {
             </div>
             <ul className="flex flex-col items-center justify-between min-h-[250px]">
               <li className="border-b border-gray-400 my-8 uppercase">
-                <a href="/about">About</a>
+                <Link onClick={() => setIsNavOpen(false)} href={"suppliers"}>
+                  Proveedores
+                </Link>
               </li>
+
               <li className="border-b border-gray-400 my-8 uppercase">
-                <a href="/portfolio">Portfolio</a>
+                <Link onClick={() => setIsNavOpen(false)} href={"product"}>
+                  Productos
+                </Link>
               </li>
+
               <li className="border-b border-gray-400 my-8 uppercase">
-                <a href="/contact">Contact</a>
+                <Link onClick={() => setIsNavOpen(false)} href={"user-list"}>
+                  Usuarios
+                </Link>
               </li>
             </ul>
           </div>
         </section>
-
-        <ul className="DESKTOP-MENU hidden space-x-8 lg:flex">
-          <li>
-            <a href="/about">About</a>
-          </li>
-          <li>
-            <a href="/portfolio">Portfolio</a>
-          </li>
-          <li>
-            <a href="/contact">Contact</a>
-          </li>
-        </ul>
       </nav>
       <style>{`
       .hideMenuNav {
