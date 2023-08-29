@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
+import Navigation from "./Navigation";
 
 export default function HamburguerMenu() {
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -41,23 +41,7 @@ export default function HamburguerMenu() {
               </svg>
             </div>
             <ul className="flex flex-col items-center justify-between min-h-[250px]">
-              <li className="border-b border-gray-400 my-8 uppercase">
-                <Link onClick={() => setIsNavOpen(false)} href={"suppliers"}>
-                  Proveedores
-                </Link>
-              </li>
-
-              <li className="border-b border-gray-400 my-8 uppercase">
-                <Link onClick={() => setIsNavOpen(false)} href={"product"}>
-                  Productos
-                </Link>
-              </li>
-
-              <li className="border-b border-gray-400 my-8 uppercase">
-                <Link onClick={() => setIsNavOpen(false)} href={"user-list"}>
-                  Usuarios
-                </Link>
-              </li>
+              <Navigation closeNav={setIsNavOpen} />
             </ul>
           </div>
         </section>

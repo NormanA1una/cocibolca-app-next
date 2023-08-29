@@ -7,7 +7,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <section className="flex max-md:flex-col">
+    <section className="flex flex-row justify-start max-md:flex-col h-screen">
       <SideNav />
       <HamburguerMenu />
       {children}
