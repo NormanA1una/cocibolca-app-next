@@ -1,16 +1,29 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import {
+  faFacebook,
+  faGithub,
+  faLinkedin,
+} from "@fortawesome/free-brands-svg-icons";
+import Link from "next/link";
+
+library.add(faFacebook, faGithub, faLinkedin);
 
 export default function CreateUser() {
   const { register, handleSubmit, reset } = useForm<SignInForm>();
+  const router = useRouter();
 
   const onSubmit = (data: SignInForm) => {
     console.log(data);
+    router.push("/");
   };
+
+  const loginRedirect = () => {};
   return (
-    <div className="min-h-screen flex items-center">
+    <div className="min-h-screen flex items-center container mx-auto">
       <form
         className="animate__animated animate__fadeInLeftBig bg-neutral-50 border-opacity-50 rounded p-5 w-full max-w-[700px] mx-auto shadow-sm h-screen md:h-[550px]"
         onSubmit={handleSubmit(onSubmit)}
@@ -108,11 +121,15 @@ export default function CreateUser() {
           </label>
         </div>
         <div className=" text-center">
+          {/* Para mientras simulando el cambio de página */}
           <button
+            onClick={() => {
+              loginRedirect();
+            }}
             type="submit"
             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-[200px] px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           >
-            Log In
+            Crear Usuario
           </button>
         </div>
       </form>

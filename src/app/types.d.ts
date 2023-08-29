@@ -11,3 +11,5 @@ type SignInForm = {
   remember: boolean;
   role: string;
 };
+
+type CloseNavFunction = (isOpen: boolean) => void;
