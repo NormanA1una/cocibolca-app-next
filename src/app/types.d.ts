@@ -5,11 +5,12 @@ type LoginForm = {
 };
 
 type SignInForm = {
-  email: string;
+  id: number;
+  correo: string;
   username: string;
   password: string;
   remember: boolean;
-  role: string;
+  roles: string;
 };
 
 type CloseNavFunction = (isOpen: boolean) => void;
