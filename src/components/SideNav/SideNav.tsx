@@ -2,7 +2,6 @@
 
 import { Sidebar } from "flowbite-react";
 import Link from "next/link";
-import { HiShoppingCart, HiTruck, HiUser } from "react-icons/hi";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFacebook,
@@ -17,21 +16,18 @@ export default function SideNav() {
       <Sidebar className="max-md:hidden" aria-label="Default sidebar example">
         <Sidebar.Items className="flex flex-col h-full">
           <Sidebar.ItemGroup>
-            {/* <Sidebar.Item href={"/user-list"} icon={HiUser}>
-              <p>Usuarios</p>
-            </Sidebar.Item>
-
-            <Sidebar.Item href={"/suppliers"} icon={HiTruck}>
-              <p>Proveedores</p>
-            </Sidebar.Item>
-
-            <Sidebar.Item href={"/product"} icon={HiShoppingCart}>
-              <p>Productos</p>
-            </Sidebar.Item> */}
             <NavigationSideNav />
           </Sidebar.ItemGroup>
           <span className="flex-1"></span>
 
+          <Link href={"/"}>
+            <button
+              type="button"
+              className=" bg-red-700 hover:bg-red-600 rounded-md p-3 mb-8 w-full text-neutral-50"
+            >
+              Cerrar sesión
+            </button>
+          </Link>
           <ul className="flex justify-around">
             <li>
               <Link

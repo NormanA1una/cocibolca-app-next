@@ -1,3 +1,5 @@
+"use client";
+
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -5,6 +7,8 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import { Button } from "@mui/material";
+import Link from "next/link";
 
 function createData(
   name: string,
@@ -26,8 +30,22 @@ const rows = [
 
 export default function Suppliers() {
   return (
-    <div className="flex flex-1 items-center p-4 border border-dashed">
-      <TableContainer component={Paper}>
+    <div className="flex flex-col flex-1 justify-center p-4 border border-dashed">
+      <div className="animate__animated animate__fadeIn flex justify-end">
+        <Link href={"/add-supplier"}>
+          <button
+            type="button"
+            className=" bg-gray-950 hover:bg-gray-900 text-neutral-50 p-3 rounded-md w-[200px]"
+          >
+            Agregar proveedor
+          </button>
+        </Link>
+      </div>
+      <div></div>
+      <TableContainer
+        className="animate__animated animate__fadeIn mt-8"
+        component={Paper}
+      >
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
