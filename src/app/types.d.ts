@@ -21,4 +21,10 @@ type SupplierForm = {
   logo: string;
 };
 
+type Params = {
+  params: {
+    id: string;
+  };
+};
+
 type CloseNavFunction = (isOpen: boolean) => void;

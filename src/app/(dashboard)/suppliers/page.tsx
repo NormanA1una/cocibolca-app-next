@@ -1,34 +1,85 @@
 "use client";
 
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import { Button } from "@mui/material";
 import Link from "next/link";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
-function createData(
-  name: string,
-  calories: number,
-  fat: number,
-  carbs: number,
-  protein: number
-) {
-  return { name, calories, fat, carbs, protein };
-}
+const mySwal = withReactContent(Swal);
 
-const rows = [
-  createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
-  createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-  createData("Eclair", 262, 16.0, 24, 6.0),
-  createData("Cupcake", 305, 3.7, 67, 4.3),
-  createData("Gingerbread", 356, 16.0, 49, 3.9),
-];
+const getSuppliers = async () => {
+  try {
+    const response = await axios.get("http://localhost:8000/supplier");
+    console.log("Get Data:", response);
+
+    return response.data.reverse();
+  } catch (error) {
+    console.log("Error:", error);
+    throw error;
+  }
+};
+
+const deleteSupplier = async (id: number) => {
+  try {
+    const response = await axios.delete(`http://localhost:8000/supplier/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting item:", error);
+    throw error;
+  }
+};
 
 export default function Suppliers() {
+  const [data, setData] = useState<SupplierForm[] | null>(null);
+
+  useEffect(() => {
+    getSuppliers()
+      .then((responseData) => {
+        setData(responseData);
+      })
+      .catch((error) => {
+        console.log("Error en guardar la data:", error);
+        throw error;
+      });
+  }, []);
+
+  const handleDelete = (supplierId: number, index: number) => {
+    try {
+      deleteSupplier(supplierId).then(() => {
+        const updateData = [...(data as SupplierForm[])];
+        updateData.splice(index, 1);
+        setData(updateData);
+
+        mySwal.fire({
+          title: "Proveedor eliminado",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 1500, // Cierra automáticamente después de 1.5 segundos
+        });
+      });
+    } catch (error) {
+      console.log("Error deleting supplier:", error);
+      throw error;
+    }
+  };
+
+  /* const handleState = async (data: SupplierForm) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:8000/supplier/${data.id}`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      console.log("Error updating supplier:", error);
+      throw error;
+    }
+  }; */
+
   return (
     <div className="flex flex-col flex-1 justify-center p-4 border border-dashed">
       <div className="animate__animated animate__fadeIn flex justify-end">
@@ -41,39 +92,118 @@ export default function Suppliers() {
           </button>
         </Link>
       </div>
-      <div></div>
-      <TableContainer
-        className="animate__animated animate__fadeIn mt-8"
-        component={Paper}
-      >
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Dessert (100g serving)</TableCell>
-              <TableCell align="right">Calories</TableCell>
-              <TableCell align="right">Fat&nbsp;(g)</TableCell>
-              <TableCell align="right">Carbs&nbsp;(g)</TableCell>
-              <TableCell align="right">Protein&nbsp;(g)</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row) => (
-              <TableRow
-                key={row.name}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+
+      <div className={`${data ? "relative overflow-x-auto mt-8" : "hidden"}`}>
+        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+              <th scope="col" className="px-6 py-3">
+                ID
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Nombre del Proveedor
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Tipo del Producto
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Estado
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Logo
+              </th>
+              <th scope="col" className="px-6 py-3">
+                Herramientas
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {data?.map((data, i) => (
+              <tr
+                key={data.id}
+                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
               >
-                <TableCell component="th" scope="row">
-                  {row.name}
-                </TableCell>
-                <TableCell align="right">{row.calories}</TableCell>
-                <TableCell align="right">{row.fat}</TableCell>
-                <TableCell align="right">{row.carbs}</TableCell>
-                <TableCell align="right">{row.protein}</TableCell>
-              </TableRow>
+                <th
+                  scope="row"
+                  className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                >
+                  {data.id}
+                </th>
+                <td className="px-6 py-4">{data.nombreProveedor}</td>
+                <td className="px-6 py-4">{data.tipoDeProducto}</td>
+                <td className="px-6 py-4">
+                  <button
+                    /* onClick={() => {
+                      handleState(data);
+                    }} */
+                    type="button"
+                    className={`${
+                      data.estado
+                        ? "bg-green-600 p-2 text-neutral-50 rounded-md w-[200px]"
+                        : "bg-red-600 p-2 text-neutral-50 rounded-md w-[200px]"
+                    }`}
+                  >
+                    {" "}
+                    {data.estado ? "Activo" : "Inactivo"}{" "}
+                  </button>
+                </td>
+                <td className="px-6 py-4">
+                  {data.logo ? (
+                    "Hay algo"
+                  ) : (
+                    <Image
+                      src="/no-image-icon-23485.png"
+                      alt="No image png"
+                      width={50}
+                      height={50}
+                    ></Image>
+                  )}
+                </td>
+                <td className="px-6 py-4">
+                  <div className="flex justify-center">
+                    <Link href={`/add-supplier/${data.id}`}>
+                      <button
+                        type="button"
+                        className=" bg-blue-700 p-3 rounded-md text-neutral-50 mr-4"
+                      >
+                        <FontAwesomeIcon
+                          icon={faPenToSquare}
+                          style={{ color: "#ffffff" }}
+                        />
+                      </button>
+                    </Link>
+
+                    <button
+                      onClick={() => {
+                        mySwal
+                          .fire({
+                            title: "SE ELIMINARA UN PROVEEDOR",
+                            text: `Estas seguro que quieres eliminar a ${data.nombreProveedor}`,
+                            icon: "warning",
+                            showConfirmButton: true,
+                            showCancelButton: true,
+                          })
+                          .then((res) => {
+                            if (res.value) {
+                              handleDelete(data.id, i);
+                            }
+                          });
+                      }}
+                      type="button"
+                      className=" bg-red-700 p-3 rounded-md text-neutral-50"
+                    >
+                      <FontAwesomeIcon
+                        icon={faTrash}
+                        style={{ color: "#ffffff" }}
+                      />
+                    </button>
+                  </div>
+                </td>
+              </tr>
             ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

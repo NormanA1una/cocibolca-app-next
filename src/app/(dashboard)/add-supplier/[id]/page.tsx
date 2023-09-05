@@ -2,29 +2,54 @@
 
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 
 const mySwal = withReactContent(Swal);
 
-export default function AddSupplier() {
+export default function ProductDetail({ params: { id } }: Params) {
+  const [data, setData] = useState<SupplierForm | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSupplierActive, setIsSupplierActive] = useState(false);
-  const { register, handleSubmit, reset } = useForm<SupplierForm>();
+  const { register, handleSubmit, reset } = useForm<SupplierForm>({
+    defaultValues: async () => getSupplier(),
+  });
+
   const router = useRouter();
 
-  const createSupplier = async (formData: SupplierForm) => {
+  const getSupplier = async () => {
     try {
-      const response = await axios.post(
-        "http://localhost:8000/supplier",
-        formData
-      );
-      console.log("Response data:", response.data);
+      const response = await axios.get(`http://localhost:8000/supplier/${id}`);
       return response.data;
     } catch (error) {
-      console.log("Error creating user:", error);
+      console.log("Error geting a one supplier:", error);
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    getSupplier()
+      .then((responseData) => {
+        setData(responseData);
+        setIsSupplierActive(responseData.estado);
+      })
+      .catch((error) => {
+        console.log("Error in setData:", error);
+        throw error;
+      });
+  }, []);
+
+  const updateSupplier = async (formData: SupplierForm) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:8000/supplier/${id}`,
+        formData
+      );
+      return response.data;
+    } catch (error) {
+      console.log("Error updating supplier:", error);
       throw error;
     }
   };
@@ -33,24 +58,28 @@ export default function AddSupplier() {
     try {
       setIsLoading(true);
       mySwal.fire({
-        title: "Añadiendo proveedor...",
+        title: "Actualizando proveedor...",
         didOpen: () => {
           mySwal.showLoading();
         },
         allowOutsideClick: false,
       });
-      await createSupplier(data);
+      await updateSupplier(data);
       mySwal
         .fire({
-          title: "Usuario creado con exito!",
+          title: "Usuario actualizado con exito!",
           icon: "success",
+          timer: 1500,
+          timerProgressBar: true,
+          showConfirmButton: false,
         })
         .then((resp) => {
-          if (resp.value) {
+          if (resp.dismiss) {
             reset();
             router.push("/suppliers");
           }
         });
+      console.log("data:", data);
 
       setIsLoading(false);
     } catch (error) {
@@ -69,6 +98,8 @@ export default function AddSupplier() {
     if (!checked) {
       setIsSupplierActive(false);
     }
+
+    console.log(checked);
   };
 
   return (
@@ -80,6 +111,22 @@ export default function AddSupplier() {
         <h1 className="text-center font-bold text-3xl my-8">
           Agregar proveedor
         </h1>
+        <div className="mb-6">
+          <label
+            htmlFor="id"
+            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            ID
+          </label>
+          <input
+            type="number"
+            id="id"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
+            placeholder="Generado por la base de datos!"
+            disabled
+            {...register("id")}
+          />
+        </div>
 
         <div className="mb-6">
           <label
@@ -118,7 +165,6 @@ export default function AddSupplier() {
         <div className="mb-6 flex items-center">
           <input
             type="checkbox"
-            checked={isSupplierActive}
             {...register("estado", {
               onChange: (e) => {
                 onCheck(e);
