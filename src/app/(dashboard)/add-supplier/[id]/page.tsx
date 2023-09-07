@@ -79,7 +79,6 @@ export default function ProductDetail({ params: { id } }: Params) {
             router.push("/suppliers");
           }
         });
-      console.log("data:", data);
 
       setIsLoading(false);
     } catch (error) {
@@ -98,8 +97,6 @@ export default function ProductDetail({ params: { id } }: Params) {
     if (!checked) {
       setIsSupplierActive(false);
     }
-
-    console.log(checked);
   };
 
   return (

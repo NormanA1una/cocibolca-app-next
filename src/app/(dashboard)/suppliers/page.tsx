@@ -14,7 +14,6 @@ const mySwal = withReactContent(Swal);
 const getSuppliers = async () => {
   try {
     const response = await axios.get("http://localhost:8000/supplier");
-    console.log("Get Data:", response);
 
     return response.data.reverse();
   } catch (error) {
@@ -67,18 +66,47 @@ export default function Suppliers() {
     }
   };
 
-  /* const handleState = async (data: SupplierForm) => {
+  const updateSupplier = async (formData: SupplierForm) => {
     try {
       const response = await axios.put(
-        `http://localhost:8000/supplier/${data.id}`,
-        data
+        `http://localhost:8000/supplier/${formData.id}`,
+        formData
       );
       return response.data;
     } catch (error) {
       console.log("Error updating supplier:", error);
       throw error;
     }
-  }; */
+  };
+
+  const cambiarEstado = (dataUpdate: SupplierForm) => {
+    mySwal
+      .fire({
+        title: "Estado del Proveedor",
+        text: `Quieres cambiar el estado de ${dataUpdate.nombreProveedor} a ${
+          !dataUpdate.estado ? "Activo" : "Inactivo"
+        }`,
+        icon: "warning",
+        showConfirmButton: true,
+        showCancelButton: true,
+      })
+      .then((res) => {
+        if (res.value) {
+          dataUpdate.estado = !dataUpdate.estado;
+          updateSupplier(dataUpdate).then(() => {
+            const updateData = [...(data as SupplierForm[])];
+            setData(updateData);
+          });
+          mySwal.fire({
+            text: "Información actualizada correctamente!",
+            icon: "success",
+            timer: 1500,
+            showConfirmButton: false,
+            timerProgressBar: true,
+          });
+        }
+      });
+  };
 
   return (
     <div className="flex flex-col flex-1 justify-center p-4 border border-dashed">
@@ -86,7 +114,7 @@ export default function Suppliers() {
         <Link href={"/add-supplier"}>
           <button
             type="button"
-            className=" bg-gray-950 hover:bg-gray-900 text-neutral-50 p-3 rounded-md w-[200px]"
+            className=" bg-slate-800 hover:bg-gray-900 text-neutral-50 p-3 rounded-md w-[200px]"
           >
             Agregar proveedor
           </button>
@@ -94,8 +122,8 @@ export default function Suppliers() {
       </div>
 
       <div className={`${data ? "relative overflow-x-auto mt-8" : "hidden"}`}>
-        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <table className="w-full text-sm text-left text-gray-500 ">
+          <thead className="text-xs text-neutral-50 uppercase bg-slate-800">
             <tr>
               <th scope="col" className="px-6 py-3">
                 ID
@@ -133,9 +161,7 @@ export default function Suppliers() {
                 <td className="px-6 py-4">{data.tipoDeProducto}</td>
                 <td className="px-6 py-4">
                   <button
-                    /* onClick={() => {
-                      handleState(data);
-                    }} */
+                    onClick={() => cambiarEstado(data)}
                     type="button"
                     className={`${
                       data.estado

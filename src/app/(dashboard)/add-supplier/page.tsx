@@ -21,7 +21,6 @@ export default function AddSupplier() {
         "http://localhost:8000/supplier",
         formData
       );
-      console.log("Response data:", response.data);
       return response.data;
     } catch (error) {
       console.log("Error creating user:", error);
