@@ -121,7 +121,7 @@ export default function Suppliers() {
         </Link>
       </div>
 
-      <div className={`${data ? "relative overflow-x-auto mt-8" : "hidden"}`}>
+      <div className={`${true ? "relative overflow-x-auto mt-8" : "hidden"}`}>
         <table className="w-full text-sm text-left text-gray-500 ">
           <thead className="text-xs text-neutral-50 uppercase bg-slate-800">
             <tr>
@@ -146,90 +146,161 @@ export default function Suppliers() {
             </tr>
           </thead>
           <tbody>
-            {data?.map((data, i) => (
-              <tr
-                key={data.id}
-                className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
-              >
-                <th
-                  scope="row"
-                  className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+            {data ? (
+              data?.map((data, i) => (
+                <tr
+                  key={data.id}
+                  className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
                 >
-                  {data.id}
-                </th>
-                <td className="px-6 py-4">{data.nombreProveedor}</td>
-                <td className="px-6 py-4">{data.tipoDeProducto}</td>
-                <td className="px-6 py-4">
-                  <button
-                    onClick={() => cambiarEstado(data)}
-                    type="button"
-                    className={`${
-                      data.estado
-                        ? "bg-green-600 p-2 text-neutral-50 rounded-md w-[200px]"
-                        : "bg-red-600 p-2 text-neutral-50 rounded-md w-[200px]"
-                    }`}
+                  <th
+                    scope="row"
+                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                   >
-                    {" "}
-                    {data.estado ? "Activo" : "Inactivo"}{" "}
-                  </button>
-                </td>
-                <td className="px-6 py-4">
-                  {data.logo ? (
-                    "Hay algo"
-                  ) : (
-                    <Image
-                      src="/no-image-icon-23485.png"
-                      alt="No image png"
-                      width={50}
-                      height={50}
-                    ></Image>
-                  )}
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex justify-center">
-                    <Link href={`/add-supplier/${data.id}`}>
+                    {data.id}
+                  </th>
+                  <td className="px-6 py-4">{data.nombreProveedor}</td>
+                  <td className="px-6 py-4">{data.tipoDeProducto}</td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() => cambiarEstado(data)}
+                      type="button"
+                      className={`${
+                        data.estado
+                          ? "bg-green-600 p-2 text-neutral-50 rounded-md w-[200px]"
+                          : "bg-red-600 p-2 text-neutral-50 rounded-md w-[200px]"
+                      }`}
+                    >
+                      {" "}
+                      {data.estado ? "Activo" : "Inactivo"}{" "}
+                    </button>
+                  </td>
+                  <td className="px-6 py-4">
+                    {data.logo ? (
+                      "Hay algo"
+                    ) : (
+                      <Image
+                        src="/no-image-icon-23485.png"
+                        alt="No image png"
+                        width={50}
+                        height={50}
+                      ></Image>
+                    )}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex justify-center">
+                      <Link href={`/add-supplier/${data.id}`}>
+                        <button
+                          type="button"
+                          className=" bg-blue-700 p-3 rounded-md text-neutral-50 mr-4"
+                        >
+                          <FontAwesomeIcon
+                            icon={faPenToSquare}
+                            style={{ color: "#ffffff" }}
+                          />
+                        </button>
+                      </Link>
+
                       <button
+                        onClick={() => {
+                          mySwal
+                            .fire({
+                              title: "SE ELIMINARA UN PROVEEDOR",
+                              text: `Estas seguro que quieres eliminar a ${data.nombreProveedor}`,
+                              icon: "warning",
+                              showConfirmButton: true,
+                              showCancelButton: true,
+                            })
+                            .then((res) => {
+                              if (res.value) {
+                                handleDelete(data.id, i);
+                              }
+                            });
+                        }}
                         type="button"
-                        className=" bg-blue-700 p-3 rounded-md text-neutral-50 mr-4"
+                        className=" bg-red-700 p-3 rounded-md text-neutral-50"
                       >
                         <FontAwesomeIcon
-                          icon={faPenToSquare}
+                          icon={faTrash}
                           style={{ color: "#ffffff" }}
                         />
                       </button>
-                    </Link>
-
-                    <button
-                      onClick={() => {
-                        mySwal
-                          .fire({
-                            title: "SE ELIMINARA UN PROVEEDOR",
-                            text: `Estas seguro que quieres eliminar a ${data.nombreProveedor}`,
-                            icon: "warning",
-                            showConfirmButton: true,
-                            showCancelButton: true,
-                          })
-                          .then((res) => {
-                            if (res.value) {
-                              handleDelete(data.id, i);
-                            }
-                          });
-                      }}
-                      type="button"
-                      className=" bg-red-700 p-3 rounded-md text-neutral-50"
-                    >
-                      <FontAwesomeIcon
-                        icon={faTrash}
-                        style={{ color: "#ffffff" }}
-                      />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <>
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <TableSkeleton key={i} />
+                ))}
+              </>
+            )}
           </tbody>
         </table>
       </div>
     </div>
   );
 }
+
+const TableSkeleton = () => {
+  return (
+    <>
+      <tr
+        role="status"
+        className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 animate-pulse"
+      >
+        <th
+          scope="row"
+          className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+        >
+          <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+        </th>
+        <td className="px-6 py-4">
+          <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+        </td>
+        <td className="px-6 py-4">
+          <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
+        </td>
+        <td className="px-6 py-4">
+          <button
+            type="button"
+            className={"bg-red-600 p-2 text-neutral-50 rounded-md w-[200px]"}
+            disabled={true}
+          >
+            Estado
+          </button>
+        </td>
+        <td className="px-6 py-4">
+          <Image
+            src="/no-image-icon-23485.png"
+            alt="No image png"
+            width={50}
+            height={50}
+          ></Image>
+        </td>
+        <td className="px-6 py-4">
+          <div className="flex justify-center">
+            <button
+              type="button"
+              className="bg-blue-700 p-3 rounded-md text-neutral-50 mr-4 w-[38px] h-[44px]"
+              disabled={true}
+            >
+              <FontAwesomeIcon
+                icon={faPenToSquare}
+                style={{ color: "#ffffff" }}
+              />
+            </button>
+
+            <button
+              type="button"
+              className="bg-red-700 p-3 rounded-md text-neutral-50 w-[36.25px] h-[44px]"
+              disabled={true}
+            >
+              <FontAwesomeIcon icon={faTrash} style={{ color: "#ffffff" }} />
+            </button>
+          </div>
+        </td>
+      </tr>
+    </>
+  );
+};

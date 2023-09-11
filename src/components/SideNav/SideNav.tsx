@@ -9,8 +9,14 @@ import {
   faLinkedin,
 } from "@fortawesome/free-brands-svg-icons";
 import NavigationSideNav from "./NavigationSideNav";
+import { signOut, useSession } from "next-auth/react";
+import { useEffect } from "react";
 
 export default function SideNav() {
+  const { data: session, status } = useSession();
+
+  console.log(session, status);
+
   return (
     <div>
       <Sidebar className="max-md:hidden" aria-label="Default sidebar example">
@@ -20,14 +26,17 @@ export default function SideNav() {
           </Sidebar.ItemGroup>
           <span className="flex-1"></span>
 
-          <Link href={"/"}>
-            <button
-              type="button"
-              className=" bg-red-700 hover:bg-red-600 rounded-md p-3 mb-8 w-full text-neutral-50"
-            >
-              Cerrar sesión
-            </button>
-          </Link>
+          <button
+            type="button"
+            onClick={() =>
+              signOut({
+                callbackUrl: "/",
+              })
+            }
+            className=" bg-red-700 hover:bg-red-600 rounded-md p-3 mb-8 w-full text-neutral-50"
+          >
+            Cerrar sesión
+          </button>
           <ul className="flex justify-around">
             <li>
               <Link
