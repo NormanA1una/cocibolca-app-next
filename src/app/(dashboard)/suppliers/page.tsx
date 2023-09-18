@@ -8,6 +8,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import NoDataSuppliers from "@/components/NoDataSuppliers/NoDataSuppliers";
+import { useSession } from "next-auth/react";
 
 const mySwal = withReactContent(Swal);
 
@@ -33,12 +35,18 @@ const deleteSupplier = async (id: number) => {
 };
 
 export default function Suppliers() {
-  const [data, setData] = useState<SupplierForm[] | null>(null);
+  const [data, setData] = useState<SupplierForm[]>([]);
+  const [dataNotFound, setDataNotFound] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getSuppliers()
       .then((responseData) => {
         setData(responseData);
+        if (!responseData.length) {
+          setDataNotFound(true);
+        }
+        setLoading(false);
       })
       .catch((error) => {
         console.log("Error en guardar la data:", error);
@@ -51,7 +59,12 @@ export default function Suppliers() {
       deleteSupplier(supplierId).then(() => {
         const updateData = [...(data as SupplierForm[])];
         updateData.splice(index, 1);
+
         setData(updateData);
+
+        if (!updateData.length) {
+          setDataNotFound(true);
+        }
 
         mySwal.fire({
           title: "Proveedor eliminado",
@@ -109,19 +122,27 @@ export default function Suppliers() {
   };
 
   return (
-    <div className="flex flex-col flex-1 justify-center p-4 border border-dashed">
-      <div className="animate__animated animate__fadeIn flex justify-end">
-        <Link href={"/add-supplier"}>
-          <button
-            type="button"
-            className=" bg-slate-800 hover:bg-gray-900 text-neutral-50 p-3 rounded-md w-[200px]"
-          >
-            Agregar proveedor
-          </button>
-        </Link>
+    <div className="flex flex-col flex-1 p-4 border border-dashed pt-20">
+      <div className="animate__animated animate__fadeIn flex flex-col">
+        <h1 className="font-bold text-2xl mb-16">Módulo de proveedores</h1>
+        <div className="flex justify-end">
+          <Link href={"/add-supplier"}>
+            <button
+              type="button"
+              className=" bg-slate-800 hover:bg-gray-900 text-neutral-50 p-3 rounded-md w-[200px]"
+            >
+              Agregar proveedor
+            </button>
+          </Link>
+        </div>
       </div>
 
-      <div className={`${true ? "relative overflow-x-auto mt-8" : "hidden"}`}>
+      <div
+        className={`${
+          // !dataNotFound ? "relative overflow-x-auto mt-8" : "hidden"
+          "relative overflow-x-auto mt-8"
+        } `}
+      >
         <table className="w-full text-sm text-left text-gray-500 ">
           <thead className="text-xs text-neutral-50 uppercase bg-slate-800">
             <tr>
@@ -145,99 +166,97 @@ export default function Suppliers() {
               </th>
             </tr>
           </thead>
-          <tbody>
-            {data ? (
-              data?.map((data, i) => (
-                <tr
-                  key={data.id}
-                  className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
-                >
-                  <th
-                    scope="row"
-                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+          <tbody className="min-h-[415px]">
+            {!loading
+              ? data?.map((data, i) => (
+                  <tr
+                    key={data.id}
+                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
                   >
-                    {data.id}
-                  </th>
-                  <td className="px-6 py-4">{data.nombreProveedor}</td>
-                  <td className="px-6 py-4">{data.tipoDeProducto}</td>
-                  <td className="px-6 py-4">
-                    <button
-                      onClick={() => cambiarEstado(data)}
-                      type="button"
-                      className={`${
-                        data.estado
-                          ? "bg-green-600 p-2 text-neutral-50 rounded-md w-[200px]"
-                          : "bg-red-600 p-2 text-neutral-50 rounded-md w-[200px]"
-                      }`}
+                    <th
+                      scope="row"
+                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                     >
-                      {" "}
-                      {data.estado ? "Activo" : "Inactivo"}{" "}
-                    </button>
-                  </td>
-                  <td className="px-6 py-4">
-                    {data.logo ? (
-                      "Hay algo"
-                    ) : (
-                      <Image
-                        src="/no-image-icon-23485.png"
-                        alt="No image png"
-                        width={50}
-                        height={50}
-                      ></Image>
-                    )}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex justify-center">
-                      <Link href={`/add-supplier/${data.id}`}>
+                      {data.id}
+                    </th>
+                    <td className="px-6 py-4">{data.nombreProveedor}</td>
+                    <td className="px-6 py-4">{data.tipoDeProducto}</td>
+                    <td className="px-6 py-4">
+                      <button
+                        onClick={() => cambiarEstado(data)}
+                        type="button"
+                        className={`${
+                          data.estado
+                            ? "bg-green-600 p-2 text-neutral-50 rounded-md w-[200px]"
+                            : "bg-red-600 p-2 text-neutral-50 rounded-md w-[200px]"
+                        }`}
+                      >
+                        {" "}
+                        {data.estado ? "Activo" : "Inactivo"}{" "}
+                      </button>
+                    </td>
+                    <td className="px-6 py-4">
+                      {data.logo ? (
+                        "Hay algo"
+                      ) : (
+                        <Image
+                          src="/no-image-icon-23485.png"
+                          alt="No image png"
+                          width={50}
+                          height={50}
+                        ></Image>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex justify-center">
+                        <Link href={`/add-supplier/${data.id}`}>
+                          <button
+                            type="button"
+                            className=" bg-blue-700 p-3 rounded-md text-neutral-50 mr-4"
+                          >
+                            <FontAwesomeIcon
+                              icon={faPenToSquare}
+                              style={{ color: "#ffffff" }}
+                            />
+                          </button>
+                        </Link>
+
                         <button
+                          onClick={() => {
+                            mySwal
+                              .fire({
+                                title: "SE ELIMINARA UN PROVEEDOR",
+                                text: `Estas seguro que quieres eliminar a ${data.nombreProveedor}`,
+                                icon: "warning",
+                                showConfirmButton: true,
+                                showCancelButton: true,
+                              })
+                              .then((res) => {
+                                if (res.value) {
+                                  handleDelete(data.id, i);
+                                }
+                              });
+                          }}
                           type="button"
-                          className=" bg-blue-700 p-3 rounded-md text-neutral-50 mr-4"
+                          className=" bg-red-700 p-3 rounded-md text-neutral-50"
                         >
                           <FontAwesomeIcon
-                            icon={faPenToSquare}
+                            icon={faTrash}
                             style={{ color: "#ffffff" }}
                           />
                         </button>
-                      </Link>
-
-                      <button
-                        onClick={() => {
-                          mySwal
-                            .fire({
-                              title: "SE ELIMINARA UN PROVEEDOR",
-                              text: `Estas seguro que quieres eliminar a ${data.nombreProveedor}`,
-                              icon: "warning",
-                              showConfirmButton: true,
-                              showCancelButton: true,
-                            })
-                            .then((res) => {
-                              if (res.value) {
-                                handleDelete(data.id, i);
-                              }
-                            });
-                        }}
-                        type="button"
-                        className=" bg-red-700 p-3 rounded-md text-neutral-50"
-                      >
-                        <FontAwesomeIcon
-                          icon={faTrash}
-                          style={{ color: "#ffffff" }}
-                        />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <>
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <TableSkeleton key={i} />
-                ))}
-              </>
-            )}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              : Array.from({ length: 5 }).map((_, i) =>
+                  data.length ? null : <TableSkeleton key={i} />
+                )}
           </tbody>
         </table>
       </div>
+
+      {dataNotFound && <NoDataSuppliers />}
     </div>
   );
 }

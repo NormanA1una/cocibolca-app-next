@@ -2,6 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
 import jwt from "jsonwebtoken";
+import { signIn } from "next-auth/react";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -27,16 +28,16 @@ export const authOptions: NextAuthOptions = {
         });
 
         const data = (await res.json()) as any;
-        console.log("Data:", data);
 
         if (data.access_token) {
           user = { id: data.sub, username: data.username, rol: data.rol };
         }
 
         if (user) {
-          console.log(user);
           return user;
         } else {
+          console.log("Error de credenciales");
+
           return null;
         }
       },

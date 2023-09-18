@@ -1,11 +1,17 @@
 "use client";
 
 import axios from "axios";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft, faUser } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import Image from "next/image";
+import { FormControlLabel, Switch, createTheme } from "@mui/material";
+import { green } from "@mui/material/colors";
 
 const mySwal = withReactContent(Swal);
 
@@ -72,8 +78,22 @@ export default function AddSupplier() {
 
   return (
     <div className="flex flex-col flex-1 justify-center p-4 border border-dashed">
+      <div className="w-full max-w-[700px] mx-auto text-right mb-4">
+        <Link href={"/suppliers"}>
+          <button
+            type="button"
+            className=" bg-red-600 rounded-md p-2 text-neutral-50 w-[100px]"
+          >
+            <FontAwesomeIcon
+              icon={faArrowLeft}
+              className=" text-neutral-50 mr-1"
+            />{" "}
+            Volver
+          </button>
+        </Link>
+      </div>
       <form
-        className="animate__animated animate__fadeIn bg-neutral-50 border-opacity-50 rounded p-5 w-full max-w-[700px] mx-auto shadow-sm h-screen md:h-[550px]"
+        className="animate__animated animate__fadeIn bg-neutral-50 border-opacity-50 rounded p-5 w-full max-w-[700px] mx-auto shadow-sm h-screen md:h-[680px]"
         onSubmit={handleSubmit(onSubmit)}
       >
         <h1 className="text-center font-bold text-3xl my-8">
@@ -114,37 +134,55 @@ export default function AddSupplier() {
           />
         </div>
 
-        <div className="mb-6 flex items-center">
-          <input
-            type="checkbox"
-            checked={isSupplierActive}
-            {...register("estado", {
-              onChange: (e) => {
-                onCheck(e);
-              },
-            })}
-            className="mr-4"
-          />
-          <button
-            className={`${
-              isSupplierActive
-                ? "bg-green-600 p-2 text-neutral-50 rounded-md w-[200px]"
-                : "bg-red-600 p-2 text-neutral-50 rounded-md w-[200px]"
+        <div className="mb-6 flex justify-end items-center">
+          <FormControlLabel
+            htmlFor="estado"
+            control={
+              <Switch
+                id="estado"
+                inputProps={{ role: "checkbox" }}
+                color="success"
+                size="medium"
+                {...(register("estado"),
+                {
+                  onChange: (e) => {
+                    onCheck(e);
+                  },
+                })}
+              />
+            }
+            label={`Estado del proveedor: ${
+              isSupplierActive ? "Activo" : "Inactivo"
             }`}
-            type="button"
-            disabled
-          >
-            {isSupplierActive ? "Activo" : "Inactivo"}
-          </button>
+            labelPlacement="start"
+          />
         </div>
 
-        <div className=" text-center">
+        <div className="mb-6">
+          <label
+            htmlFor="logo"
+            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            Logo del Proveedor
+          </label>
+          <Image
+            src="/no-image-icon-23485.png"
+            alt="No image png"
+            width={150}
+            height={150}
+            className=""
+          ></Image>
+          <input type="file" disabled {...register("logo")} />
+        </div>
+
+        <div className="flex justify-center">
           <button
             disabled={isLoading}
             type="submit"
             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-[200px] px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           >
-            {isLoading ? "Creando..." : "Crear usuario"}
+            {isLoading ? "Creando..." : "Crear proveedor"}
+            <FontAwesomeIcon icon={faUser} className=" ml-2" />
           </button>
         </div>
       </form>

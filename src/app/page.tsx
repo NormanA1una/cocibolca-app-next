@@ -8,31 +8,62 @@ import { signIn, useSession } from "next-auth/react";
 import { useEffect } from "react";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import CircularProgress from "@mui/material/CircularProgress";
-import Box from "@mui/material/Box";
+import LoginSkeleton from "@/components/LoginSkeleton/LoginSkeleton";
 
 const mySwal = withReactContent(Swal);
 
 function Login() {
-  const { register, handleSubmit } = useForm<LoginForm>();
+  const { register, handleSubmit, setValue } = useForm<LoginForm>();
   const { status, data: session } = useSession();
   const router = useRouter();
 
   const onSubmit = async (data: LoginForm) => {
     const { username, password } = data;
 
-    await signIn("credentials", {
+    if (data.remember) {
+      sessionStorage.setItem("username", data.username);
+    } else if (data.username === sessionStorage.getItem("username")) {
+      sessionStorage.removeItem("username");
+    }
+
+    const res = await signIn("credentials", {
       username: username,
       password: password,
       callbackUrl: "/suppliers",
+      redirect: false,
     });
+
+    // Verifica si el inicio de sesión fue exitoso o si hubo un error
+    if (res?.error) {
+      mySwal.fire({
+        title: "Credenciales incorrectos",
+        text: "Revise nuevamente el nombre de usuario y la contraseña",
+        icon: "error",
+        allowOutsideClick: false,
+      });
+      return;
+    }
+
+    //Guardamos el username para cierto motivo para mientras
+    sessionStorage.setItem("lobbyName", data.username);
+
+    // Si el inicio de sesión fue exitoso, redirige al usuario
+    router.push("/suppliers");
   };
 
   useEffect(() => {
+    const usernameStored = sessionStorage.getItem("username");
+
+    if (usernameStored) {
+      setValue("username", usernameStored);
+      setValue("remember", true);
+    }
+
     if (session) {
       router.push("/suppliers");
     }
   });
+
   return (
     <>
       {status === "loading" ? (
@@ -122,11 +153,3 @@ function Login() {
 }
 
 export default Login;
-
-const LoginSkeleton = () => {
-  return (
-    <Box className="min-h-screen flex items-center justify-center container mx-auto">
-      <CircularProgress />
-    </Box>
-  );
-};

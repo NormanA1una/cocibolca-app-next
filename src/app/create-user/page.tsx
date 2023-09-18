@@ -16,6 +16,10 @@ export default function CreateUser() {
   const router = useRouter();
 
   const createUser = async (formData: SignInForm) => {
+    if (formData.remember) {
+      sessionStorage.setItem("username", formData.username);
+    }
+
     try {
       const response = await axios.post("http://localhost:8000/user", formData);
       console.log("Response data:", response.data);
@@ -144,13 +148,7 @@ export default function CreateUser() {
             htmlFor="remember"
             className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
           >
-            Recordar usuario /{" "}
-            <Link
-              href={"create-user"}
-              className=" hover:text-blue-600 hover:underline"
-            >
-              Crear
-            </Link>
+            Recordar usuario
           </label>
         </div>
         <div className=" text-center">

@@ -9,34 +9,40 @@ import {
   faLinkedin,
 } from "@fortawesome/free-brands-svg-icons";
 import NavigationSideNav from "./NavigationSideNav";
-import { signOut, useSession } from "next-auth/react";
-import { useEffect } from "react";
+import Image from "next/image";
 
 export default function SideNav() {
-  const { data: session, status } = useSession();
-
-  console.log(session, status);
-
   return (
-    <div>
-      <Sidebar className="max-md:hidden" aria-label="Default sidebar example">
-        <Sidebar.Items className="flex flex-col h-full">
+    <div className="flex">
+      <Sidebar
+        className="max-md:hidden w-[210px]"
+        aria-label="Default sidebar example"
+      >
+        <Sidebar.Items className="flex flex-col  h-full">
+          <Image
+            src={"/licoreriaCocibolcaLogo.jpg"}
+            width={180}
+            height={180}
+            alt="Logo Licorería Cocibolca"
+            className="mx-auto rounded-md"
+          />
           <Sidebar.ItemGroup>
             <NavigationSideNav />
           </Sidebar.ItemGroup>
           <span className="flex-1"></span>
 
-          <button
+          {/* <button
             type="button"
-            onClick={() =>
+            onClick={() => {
+              sessionStorage.removeItem("lobbyName");
               signOut({
                 callbackUrl: "/",
-              })
-            }
+              });
+            }}
             className=" bg-red-700 hover:bg-red-600 rounded-md p-3 mb-8 w-full text-neutral-50"
           >
             Cerrar sesión
-          </button>
+          </button> */}
           <ul className="flex justify-around">
             <li>
               <Link
