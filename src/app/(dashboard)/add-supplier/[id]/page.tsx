@@ -1,34 +1,56 @@
 "use client";
 
+import { FormControlLabel, Switch } from "@mui/material";
 import axios from "axios";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faUser } from "@fortawesome/free-solid-svg-icons";
+import { useEffect, useState } from "react";
+import { useForm, Controller } from "react-hook-form";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
-import Image from "next/image";
-import { FormControlLabel, Switch } from "@mui/material";
 
 const mySwal = withReactContent(Swal);
 
-export default function AddSupplier() {
+export default function ProductDetail({ params: { id } }: Params) {
+  const [data, setData] = useState<SupplierForm | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSupplierActive, setIsSupplierActive] = useState(false);
-  const { register, handleSubmit, reset, control } = useForm<SupplierForm>();
+  const { register, handleSubmit, reset, control } = useForm<SupplierForm>({
+    defaultValues: async () => getSupplier(),
+  });
+
   const router = useRouter();
 
-  const createSupplier = async (formData: SupplierForm) => {
+  const getSupplier = async () => {
     try {
-      const response = await axios.post(
-        "http://localhost:8000/supplier",
+      const response = await axios.get(`http://localhost:8000/supplier/${id}`);
+      return response.data;
+    } catch (error) {
+      console.log("Error geting a one supplier:", error);
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    getSupplier()
+      .then((responseData) => {
+        setData(responseData);
+        setIsSupplierActive(responseData.estado);
+      })
+      .catch((error) => {
+        console.log("Error in setData:", error);
+        throw error;
+      });
+  }, []);
+
+  const updateSupplier = async (formData: SupplierForm) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:8000/supplier/${id}`,
         formData
       );
       return response.data;
     } catch (error) {
-      console.log("Error creating user:", error);
+      console.log("Error updating supplier:", error);
       throw error;
     }
   };
@@ -37,22 +59,25 @@ export default function AddSupplier() {
     try {
       setIsLoading(true);
       mySwal.fire({
-        title: "Añadiendo proveedor...",
+        title: "Actualizando proveedor...",
         didOpen: () => {
           mySwal.showLoading();
         },
         allowOutsideClick: false,
       });
-      console.log(data);
+      console.log("DATA", data);
 
-      await createSupplier(data);
+      await updateSupplier(data);
       mySwal
         .fire({
-          title: "Usuario creado con exito!",
+          title: "Usuario actualizado con exito!",
           icon: "success",
+          timer: 1500,
+          timerProgressBar: true,
+          showConfirmButton: false,
         })
         .then((resp) => {
-          if (resp.value) {
+          if (resp.dismiss) {
             reset();
             router.push("/suppliers");
           }
@@ -76,30 +101,33 @@ export default function AddSupplier() {
       setIsSupplierActive(false);
     }
   };
+  console.log("IS SUPPLIER ACTIVE", isSupplierActive);
 
   return (
-    <div className="flex flex-col flex-1 justify-center p-4 border border-dashed">
-      <div className="w-full max-w-[700px] mx-auto text-right mb-4">
-        <Link href={"/suppliers"}>
-          <button
-            type="button"
-            className=" bg-red-600 rounded-md p-2 text-neutral-50 w-[100px]"
-          >
-            <FontAwesomeIcon
-              icon={faArrowLeft}
-              className=" text-neutral-50 mr-1"
-            />{" "}
-            Volver
-          </button>
-        </Link>
-      </div>
+    <div className="flex flex-col flex-1 justify-center p-4 border border-dashed my-auto">
       <form
-        className="animate__animated animate__fadeIn bg-neutral-50 border-opacity-50 rounded p-5 w-full max-w-[700px] mx-auto shadow-sm h-screen md:h-[680px]"
+        className="animate__animated animate__fadeIn bg-neutral-50 border-opacity-50 rounded p-5 w-full max-w-[700px] mx-auto shadow-sm h-screen md:h-[550px]"
         onSubmit={handleSubmit(onSubmit)}
       >
         <h1 className="text-center font-bold text-3xl my-8">
-          Agregar proveedor
+          Actualizar proveedor
         </h1>
+        <div className="mb-6">
+          <label
+            htmlFor="id"
+            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            ID
+          </label>
+          <input
+            type="number"
+            id="id"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
+            placeholder="Generado por la base de datos!"
+            disabled
+            {...register("id")}
+          />
+        </div>
 
         <div className="mb-6">
           <label
@@ -162,33 +190,35 @@ export default function AddSupplier() {
               />
             )}
           />
-        </div>
-
-        <div className="mb-6">
-          <label
-            htmlFor="logo"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          {/* <input
+            type="checkbox"
+            {...register("estado", {
+              onChange: (e) => {
+                onCheck(e);
+              },
+            })}
+            className="mr-4"
+          />
+          <button
+            className={`${
+              isSupplierActive
+                ? "bg-green-600 p-2 text-neutral-50 rounded-md w-[200px]"
+                : "bg-red-600 p-2 text-neutral-50 rounded-md w-[200px]"
+            }`}
+            type="button"
+            disabled
           >
-            Logo del Proveedor
-          </label>
-          <Image
-            src="/no-image-icon-23485.png"
-            alt="No image png"
-            width={150}
-            height={150}
-            className=""
-          ></Image>
-          <input type="file" disabled {...register("logo")} />
+            {isSupplierActive ? "Activo" : "Inactivo"}
+          </button> */}
         </div>
 
-        <div className="flex justify-center">
+        <div className=" text-center">
           <button
             disabled={isLoading}
             type="submit"
             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-[200px] px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           >
-            {isLoading ? "Creando..." : "Crear proveedor"}
-            <FontAwesomeIcon icon={faUser} className=" ml-2" />
+            {isLoading ? "Actualizando..." : "Actualizar proveedor"}
           </button>
         </div>
       </form>

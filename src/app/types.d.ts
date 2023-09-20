@@ -5,11 +5,32 @@ type LoginForm = {
 };
 
 type SignInForm = {
-  email: string;
+  id: number;
+  correo: string;
   username: string;
   password: string;
   remember: boolean;
-  role: string;
+  roles: string;
+};
+
+type SupplierForm = {
+  id: number;
+  nombreProveedor: string;
+  tipoDeProducto: string;
+  estado: boolean;
+  logo: string;
+};
+
+type Params = {
+  params: {
+    id: string;
+  };
+};
+
+type NavLinksTypes = {
+  name: string;
+  pathname: string;
+  icon: IconType;
 };
 
 type CloseNavFunction = (isOpen: boolean) => void;

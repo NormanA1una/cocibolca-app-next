@@ -2,26 +2,64 @@
 
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import {
-  faFacebook,
-  faGithub,
-  faLinkedin,
-} from "@fortawesome/free-brands-svg-icons";
 import Link from "next/link";
+import { useState } from "react";
+import axios from "axios";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
-library.add(faFacebook, faGithub, faLinkedin);
+const mySwal = withReactContent(Swal);
 
 export default function CreateUser() {
-  const { register, handleSubmit, reset } = useForm<SignInForm>();
+  const [isLoading, setIsLoading] = useState(false);
+  const { register, handleSubmit } = useForm<SignInForm>();
   const router = useRouter();
 
-  const onSubmit = (data: SignInForm) => {
-    console.log(data);
-    router.push("/");
+  const createUser = async (formData: SignInForm) => {
+    if (formData.remember) {
+      sessionStorage.setItem("username", formData.username);
+    }
+
+    try {
+      const response = await axios.post("http://localhost:8000/user", formData);
+      console.log("Response data:", response.data);
+      return response.data;
+    } catch (error) {
+      console.log("Error creating user:", error);
+      throw error;
+    }
   };
 
-  const loginRedirect = () => {};
+  const onSubmit = async (data: SignInForm) => {
+    try {
+      setIsLoading(true);
+      mySwal.fire({
+        title: "Creando Usuario...",
+        didOpen: () => {
+          mySwal.showLoading();
+        },
+        allowOutsideClick: false,
+      });
+      await createUser(data);
+      mySwal
+        .fire({
+          title: "Usuario creado con exito!",
+          icon: "success",
+        })
+        .then((resp) => {
+          if (resp.value) {
+            router.push("/");
+          }
+        });
+      console.log("data:", data);
+
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      console.log("Error in submit data:", error);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center container mx-auto">
       <form
@@ -42,7 +80,7 @@ export default function CreateUser() {
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
             placeholder="name@flowbite.com"
             required
-            {...register("username")}
+            {...register("correo")}
           />
         </div>
         <div className="mb-6">
@@ -86,10 +124,10 @@ export default function CreateUser() {
               Rol
             </label>
             <select
-              id="password"
+              id="role"
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               required
-              {...register("role")}
+              {...register("roles")}
             >
               <option>-</option>
               <option>Administrador</option>
@@ -102,7 +140,6 @@ export default function CreateUser() {
             <input
               id="remember"
               type="checkbox"
-              value=""
               className="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800"
               {...register("remember")}
             />
@@ -111,25 +148,16 @@ export default function CreateUser() {
             htmlFor="remember"
             className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
           >
-            Recordar usuario /{" "}
-            <Link
-              href={"create-user"}
-              className=" hover:text-blue-600 hover:underline"
-            >
-              Crear
-            </Link>
+            Recordar usuario
           </label>
         </div>
         <div className=" text-center">
-          {/* Para mientras simulando el cambio de página */}
           <button
-            onClick={() => {
-              loginRedirect();
-            }}
+            disabled={isLoading}
             type="submit"
             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-[200px] px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           >
-            Crear Usuario
+            {isLoading ? "Creando..." : "Crear usuario"}
           </button>
         </div>
       </form>
