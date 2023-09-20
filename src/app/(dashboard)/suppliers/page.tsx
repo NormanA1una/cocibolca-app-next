@@ -9,7 +9,7 @@ import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import NoDataSuppliers from "@/components/NoDataSuppliers/NoDataSuppliers";
-import { useSession } from "next-auth/react";
+import { FormControlLabel, Switch } from "@mui/material";
 
 const mySwal = withReactContent(Swal);
 
@@ -182,18 +182,19 @@ export default function Suppliers() {
                     <td className="px-6 py-4">{data.nombreProveedor}</td>
                     <td className="px-6 py-4">{data.tipoDeProducto}</td>
                     <td className="px-6 py-4">
-                      <button
-                        onClick={() => cambiarEstado(data)}
-                        type="button"
-                        className={`${
-                          data.estado
-                            ? "bg-green-600 p-2 text-neutral-50 rounded-md w-[200px]"
-                            : "bg-red-600 p-2 text-neutral-50 rounded-md w-[200px]"
-                        }`}
-                      >
-                        {" "}
-                        {data.estado ? "Activo" : "Inactivo"}{" "}
-                      </button>
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            checked={data.estado}
+                            inputProps={{ type: "checkbox", role: "switch" }}
+                            color="success"
+                            size="medium"
+                            onClick={() => cambiarEstado(data)}
+                          />
+                        }
+                        label={`${data.estado ? "Activo" : "Inactivo"}`}
+                        labelPlacement="start"
+                      />
                     </td>
                     <td className="px-6 py-4">
                       {data.logo ? (

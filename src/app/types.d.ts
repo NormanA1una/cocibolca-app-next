@@ -27,4 +27,10 @@ type Params = {
   };
 };
 
+type NavLinksTypes = {
+  name: string;
+  pathname: string;
+  icon: IconType;
+};
+
 type CloseNavFunction = (isOpen: boolean) => void;

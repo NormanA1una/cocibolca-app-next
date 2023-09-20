@@ -1,8 +1,6 @@
 import { NextAuthOptions } from "next-auth";
 import NextAuth from "next-auth/next";
 import CredentialsProvider from "next-auth/providers/credentials";
-import jwt from "jsonwebtoken";
-import { signIn } from "next-auth/react";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -28,9 +26,15 @@ export const authOptions: NextAuthOptions = {
         });
 
         const data = (await res.json()) as any;
+        console.log("Dataaaa:", data.access_token);
 
         if (data.access_token) {
-          user = { id: data.sub, username: data.username, rol: data.rol };
+          user = {
+            id: data.sub,
+            username: data.username,
+            rol: data.rol,
+            accesToken: data.access_token,
+          };
         }
 
         if (user) {
@@ -45,11 +49,13 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     jwt: async (props) => {
-      props.user && (props.token.user = props.user);
-      return props.token;
+      /* props.user && (props.token.user = props.user);
+      return props.token; */
+      return { ...props.token, ...props.user };
     },
     session: async ({ session, token }) => {
-      session.user = token.user as any;
+      session.user = token as any;
+
       return session;
     },
   },

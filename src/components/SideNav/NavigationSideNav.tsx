@@ -1,13 +1,30 @@
 import { NavLinks } from "../../app/NavLinks";
 import { usePathname } from "next/navigation";
 import { Sidebar } from "flowbite-react";
+import { useSession } from "next-auth/react";
 
 export default function NavigationSideNav() {
+  const { data: session, status } = useSession();
+
   const pathname = usePathname();
+
+  const filterNavlinks: NavLinksTypes[] = [];
+
+  NavLinks.forEach((item) => {
+    if (session?.user.rol[0] !== "Usuario") {
+      filterNavlinks.push(item);
+
+      return filterNavlinks;
+    } else if (session?.user.rol[0] === "Usuario" && item.name !== "Usuarios") {
+      filterNavlinks.push(item);
+
+      return filterNavlinks;
+    }
+  });
 
   return (
     <>
-      {NavLinks.map((link) => {
+      {filterNavlinks.map((link) => {
         const isActive = pathname === link.pathname;
 
         return (

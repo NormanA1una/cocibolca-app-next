@@ -4,21 +4,20 @@ import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faUser } from "@fortawesome/free-solid-svg-icons";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import Image from "next/image";
-import { FormControlLabel, Switch, createTheme } from "@mui/material";
-import { green } from "@mui/material/colors";
+import { FormControlLabel, Switch } from "@mui/material";
 
 const mySwal = withReactContent(Swal);
 
 export default function AddSupplier() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSupplierActive, setIsSupplierActive] = useState(false);
-  const { register, handleSubmit, reset } = useForm<SupplierForm>();
+  const { register, handleSubmit, reset, control } = useForm<SupplierForm>();
   const router = useRouter();
 
   const createSupplier = async (formData: SupplierForm) => {
@@ -44,6 +43,8 @@ export default function AddSupplier() {
         },
         allowOutsideClick: false,
       });
+      console.log(data);
+
       await createSupplier(data);
       mySwal
         .fire({
@@ -135,26 +136,31 @@ export default function AddSupplier() {
         </div>
 
         <div className="mb-6 flex justify-end items-center">
-          <FormControlLabel
-            htmlFor="estado"
-            control={
-              <Switch
-                id="estado"
-                inputProps={{ role: "checkbox" }}
-                color="success"
-                size="medium"
-                {...(register("estado"),
-                {
-                  onChange: (e) => {
-                    onCheck(e);
-                  },
-                })}
+          <Controller
+            name="estado"
+            control={control}
+            defaultValue={isSupplierActive}
+            render={({ field }) => (
+              <FormControlLabel
+                control={
+                  <Switch
+                    {...field}
+                    checked={isSupplierActive}
+                    inputProps={{ type: "checkbox", role: "switch" }}
+                    color="success"
+                    size="medium"
+                    onChange={(e) => {
+                      field.onChange(e);
+                      onCheck(e);
+                    }}
+                  />
+                }
+                label={`Estado del proveedor: ${
+                  isSupplierActive ? "Activo" : "Inactivo"
+                }`}
+                labelPlacement="start"
               />
-            }
-            label={`Estado del proveedor: ${
-              isSupplierActive ? "Activo" : "Inactivo"
-            }`}
-            labelPlacement="start"
+            )}
           />
         </div>
 

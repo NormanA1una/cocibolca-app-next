@@ -110,7 +110,7 @@ export default function ProductDetail({ params: { id } }: Params) {
         onSubmit={handleSubmit(onSubmit)}
       >
         <h1 className="text-center font-bold text-3xl my-8">
-          Editar proveedor
+          Actualizar proveedor
         </h1>
         <div className="mb-6">
           <label

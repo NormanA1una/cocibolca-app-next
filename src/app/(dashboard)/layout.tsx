@@ -10,14 +10,12 @@ export default function DashboardLayout({
 }) {
   return (
     <section className="flex flex-row justify-start max-md:flex-col h-screen">
-      <NextAuthProvider>
-        <SideNav />
-        <HamburguerMenu />
-        <div className="w-full flex flex-col">
-          <NavBar />
-          {children}
-        </div>
-      </NextAuthProvider>
+      <SideNav />
+      <HamburguerMenu />
+      <div className="w-full flex flex-col">
+        <NavBar />
+        {children}
+      </div>
     </section>
   );
 }

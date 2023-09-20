@@ -1,7 +1,7 @@
 "use client";
 
 import { Dropdown, Navbar } from "flowbite-react";
-import { signOut, useSession } from "next-auth/react";
+import { signOut, useSession, getProviders } from "next-auth/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 
@@ -29,6 +29,7 @@ export default function NavBar() {
           className=" w-[285px] justify-center text-red-700"
           onClick={() => {
             sessionStorage.removeItem("lobbyName");
+            sessionStorage.removeItem("userRol");
             signOut({
               callbackUrl: "/",
             });
