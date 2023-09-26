@@ -9,7 +9,11 @@ export default function NavBar() {
   const { data: session } = useSession() as any;
 
   return (
-    <Navbar fluid rounded className="w-full max-md:hidden rounded-none p-6">
+    <Navbar
+      fluid
+      rounded
+      className="fixed w-[calc(100vw-210px)] max-md:hidden rounded-none p-6"
+    >
       <Navbar.Brand>
         <span className="self-center whitespace-nowrap text-3xl font-semibold dark:text-white">
           Licorería Cocibolca
@@ -17,12 +21,23 @@ export default function NavBar() {
       </Navbar.Brand>
       <span className="flex-1"></span>
 
-      <h1 className="font-normal text-xl">
-        Bienvenido{" "}
-        <span className="font-bold">
-          {session?.user?.username || sessionStorage.getItem("lobbyName")}
-        </span>
-      </h1>
+      {session?.user ? (
+        <h1 className="font-normal text-xl flex items-center">
+          Hola nuevamente,{" "}
+          {
+            <span className="font-bold ml-1">
+              {session?.user?.username || sessionStorage.getItem("lobbyName")}
+            </span>
+          }
+        </h1>
+      ) : (
+        <>
+          <div
+            role="status"
+            className="w-[300px] ml-1 animate-pulse h-[15px] bg-gray-200 rounded-full dark:bg-gray-700"
+          ></div>
+        </>
+      )}
 
       <Dropdown inline label="">
         <Dropdown.Item

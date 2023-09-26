@@ -10,36 +10,52 @@ import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import NoDataSuppliers from "@/components/NoDataSuppliers/NoDataSuppliers";
 import { FormControlLabel, Switch } from "@mui/material";
+import { useSession } from "next-auth/react";
 
 const mySwal = withReactContent(Swal);
-
-const getSuppliers = async () => {
-  try {
-    const response = await axios.get("http://localhost:8000/supplier");
-
-    return response.data.reverse();
-  } catch (error) {
-    console.log("Error:", error);
-    throw error;
-  }
-};
-
-const deleteSupplier = async (id: number) => {
-  try {
-    const response = await axios.delete(`http://localhost:8000/supplier/${id}`);
-    return response.data;
-  } catch (error) {
-    console.error("Error deleting item:", error);
-    throw error;
-  }
-};
 
 export default function Suppliers() {
   const [data, setData] = useState<SupplierForm[]>([]);
   const [dataNotFound, setDataNotFound] = useState(false);
   const [loading, setLoading] = useState(true);
+  const { data: session } = useSession();
+
+  const getSuppliers = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/supplier", {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+        },
+      });
+
+      return response.data.reverse();
+    } catch (error) {
+      console.log("Error:", error);
+      throw error;
+    }
+  };
+
+  const deleteSupplier = async (id: number) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:8000/supplier/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting item:", error);
+      throw error;
+    }
+  };
 
   useEffect(() => {
+    if (session?.user) {
+      sessionStorage.setItem("accessToken", session.user.accesToken);
+    }
     getSuppliers()
       .then((responseData) => {
         setData(responseData);
@@ -50,7 +66,7 @@ export default function Suppliers() {
       })
       .catch((error) => {
         console.log("Error en guardar la data:", error);
-        throw error;
+        // throw error;
       });
   }, []);
 
@@ -83,7 +99,12 @@ export default function Suppliers() {
     try {
       const response = await axios.put(
         `http://localhost:8000/supplier/${formData.id}`,
-        formData
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+          },
+        }
       );
       return response.data;
     } catch (error) {
@@ -137,12 +158,7 @@ export default function Suppliers() {
         </div>
       </div>
 
-      <div
-        className={`${
-          // !dataNotFound ? "relative overflow-x-auto mt-8" : "hidden"
-          "relative overflow-x-auto mt-8"
-        } `}
-      >
+      <div className={`${"relative overflow-x-auto mt-8"} `}>
         <table className="w-full text-sm text-left text-gray-500 ">
           <thead className="text-xs text-neutral-50 uppercase bg-slate-800">
             <tr>

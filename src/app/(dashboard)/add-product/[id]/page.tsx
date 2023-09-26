@@ -1,58 +1,62 @@
 "use client";
 
-import axios from "axios";
-import Image from "next/image";
-import Link from "next/link";
-import Swal from "sweetalert2";
-import withReactContent from "sweetalert2-react-content";
 import { faArrowLeft, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { DatePicker, Select } from "antd";
+import axios from "axios";
+import dayjs from "dayjs";
+import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { DatePicker, Select } from "antd";
-import dayjs from "dayjs";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
 const mySwal = withReactContent(Swal);
 
-const getSupplier = async () => {
-  try {
-    const response = await axios.get("http://localhost:8000/supplier", {
-      headers: {
-        Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
-      },
+export default function ProductDetail({ params: { id } }: Params) {
+  const [dataProduct, setDataProduct] = useState<ProductForm | null>(null);
+  const [dataSupplier, setDataSupplier] = useState<SupplierForm[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSupplierActive, setIsSupplierActive] = useState(false);
+  const { register, handleSubmit, reset, control, setValue } =
+    useForm<ProductForm>({
+      defaultValues: async () => getProduct(),
     });
 
-    return response.data.reverse();
-  } catch (error) {
-    console.log("Error:", error);
-    throw error;
-  }
-};
+  const router = useRouter();
 
-const createProduct = async (formData: ProductForm) => {
-  try {
-    const response = await axios.post(
-      "http://localhost:8000/product-supplier",
-      formData,
-      {
+  const getProduct = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/product-supplier/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.log("Error geting a one supplier:", error);
+      throw error;
+    }
+  };
+  const getSupplier = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/supplier", {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
         },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.log("Error creating product:", error);
-    throw error;
-  }
-};
+      });
 
-export default function AddProduct() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [dataSupplier, setDataSupplier] = useState<SupplierForm[]>([]);
-  const { register, handleSubmit, reset, control } = useForm<ProductForm>();
-  const router = useRouter();
+      return response.data.reverse();
+    } catch (error) {
+      console.log("Error:", error);
+      throw error;
+    }
+  };
 
   useEffect(() => {
     getSupplier()
@@ -63,32 +67,46 @@ export default function AddProduct() {
         console.log("Error en guardar la data:", error);
         throw error;
       });
+
+    getProduct()
+      .then((responseData) => {
+        setDataProduct(responseData);
+        setIsSupplierActive(responseData.estado);
+      })
+      .catch((error) => {
+        console.log("Error in setData:", error);
+        throw error;
+      });
   }, []);
 
   const onSubmit = async (data: ProductForm) => {
     try {
       setIsLoading(true);
       mySwal.fire({
-        title: "Añadiendo producto...",
+        title: "Actualizando producto...",
         didOpen: () => {
           mySwal.showLoading();
         },
         allowOutsideClick: false,
       });
+      console.log("DATA", data);
 
       if (typeof data.fechaDeInventario === "number") {
         const formatedDate = new Date(data.fechaDeInventario);
         data.fechaDeInventario = formatedDate;
       }
 
-      await createProduct(data);
+      await updateProduct(data);
       mySwal
         .fire({
-          title: "Producto añadido con exito!",
+          title: "Producto actualizado con exito!",
           icon: "success",
+          timer: 1500,
+          timerProgressBar: true,
+          showConfirmButton: false,
         })
         .then((resp) => {
-          if (resp.value) {
+          if (resp.dismiss) {
             reset();
             router.push("/product");
           }
@@ -98,6 +116,27 @@ export default function AddProduct() {
     } catch (error) {
       setIsLoading(false);
       console.log("Error in submit data:", error);
+    }
+  };
+
+  const updateProduct = async (formData: ProductForm) => {
+    try {
+      const response = await axios.put(
+        `http://localhost:8000/product-supplier/${id}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+          },
+        }
+      );
+
+      console.log(response.data);
+
+      return response.data;
+    } catch (error) {
+      console.log("Error updating supplier:", error);
+      throw error;
     }
   };
 
@@ -127,6 +166,24 @@ export default function AddProduct() {
         </h1>
 
         <section className="flex">
+          <div className="mb-6 mr-4">
+            <label
+              htmlFor="id"
+              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >
+              ID
+            </label>
+            <input
+              type="text"
+              id="id"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-[100px] p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
+              placeholder="Nombre del producto"
+              required
+              disabled
+              {...register("id")}
+            />
+          </div>
+
           <div className="mb-6">
             <label
               htmlFor="nombreProducto"
@@ -137,12 +194,13 @@ export default function AddProduct() {
             <input
               type="text"
               id="nombreProducto"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-[429px] p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-[329px] p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
               placeholder="Nombre del producto"
               required
               {...register("nombreProducto")}
             />
           </div>
+
           <span className="flex-1"></span>
 
           <div className="mt-1 flex items-center">
@@ -151,7 +209,7 @@ export default function AddProduct() {
               control={control}
               render={({ field }) => (
                 <Select
-                  defaultValue={"-"}
+                  placeholder={dataProduct?.nombreSupplier}
                   style={{ width: 157, height: 42 }}
                   onChange={(data) => {
                     field.onChange(data ? data.valueOf() : null);

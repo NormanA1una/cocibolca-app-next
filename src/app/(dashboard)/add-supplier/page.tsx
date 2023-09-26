@@ -24,7 +24,12 @@ export default function AddSupplier() {
     try {
       const response = await axios.post(
         "http://localhost:8000/supplier",
-        formData
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+          },
+        }
       );
       return response.data;
     } catch (error) {
