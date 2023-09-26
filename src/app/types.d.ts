@@ -21,6 +21,23 @@ type SupplierForm = {
   logo: string;
 };
 
+type ProductForm = {
+  id: number;
+  nombreProducto: string;
+  cantidadAMano: number;
+  cantidadContada: number;
+  presentacion: string;
+  fechaDeInventario: Date;
+  nombreSupplier: string;
+};
+
+type UserData = {
+  id: number;
+  correo: string;
+  username: string;
+  roles: string;
+};
+
 type Params = {
   params: {
     id: string;

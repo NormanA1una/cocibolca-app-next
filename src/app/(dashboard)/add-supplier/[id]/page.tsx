@@ -10,7 +10,7 @@ import withReactContent from "sweetalert2-react-content";
 
 const mySwal = withReactContent(Swal);
 
-export default function ProductDetail({ params: { id } }: Params) {
+export default function SupplierDetail({ params: { id } }: Params) {
   const [data, setData] = useState<SupplierForm | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSupplierActive, setIsSupplierActive] = useState(false);
@@ -22,7 +22,11 @@ export default function ProductDetail({ params: { id } }: Params) {
 
   const getSupplier = async () => {
     try {
-      const response = await axios.get(`http://localhost:8000/supplier/${id}`);
+      const response = await axios.get(`http://localhost:8000/supplier/${id}`, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+        },
+      });
       return response.data;
     } catch (error) {
       console.log("Error geting a one supplier:", error);
@@ -46,7 +50,12 @@ export default function ProductDetail({ params: { id } }: Params) {
     try {
       const response = await axios.put(
         `http://localhost:8000/supplier/${id}`,
-        formData
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+          },
+        }
       );
       return response.data;
     } catch (error) {
@@ -101,7 +110,6 @@ export default function ProductDetail({ params: { id } }: Params) {
       setIsSupplierActive(false);
     }
   };
-  console.log("IS SUPPLIER ACTIVE", isSupplierActive);
 
   return (
     <div className="flex flex-col flex-1 justify-center p-4 border border-dashed my-auto">
