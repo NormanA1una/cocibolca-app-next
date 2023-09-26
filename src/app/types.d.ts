@@ -50,4 +50,8 @@ type NavLinksTypes = {
   icon: IconType;
 };
 
+type DataPagination = {
+  selected: number;
+};
+
 type CloseNavFunction = (isOpen: boolean) => void;

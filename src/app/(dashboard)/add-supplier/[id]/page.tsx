@@ -11,7 +11,7 @@ import withReactContent from "sweetalert2-react-content";
 const mySwal = withReactContent(Swal);
 
 export default function SupplierDetail({ params: { id } }: Params) {
-  const [data, setData] = useState<SupplierForm | null>(null);
+  const [_data, setData] = useState<SupplierForm | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSupplierActive, setIsSupplierActive] = useState(false);
   const { register, handleSubmit, reset, control } = useForm<SupplierForm>({

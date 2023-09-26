@@ -17,7 +17,6 @@ const mySwal = withReactContent(Swal);
 export default function Suppliers() {
   const [data, setData] = useState<SupplierForm[]>([]);
   const [dataNotFound, setDataNotFound] = useState(false);
-  const [accessToken, setAccessToken] = useState("");
   const [loading, setLoading] = useState(true);
   const { data: session } = useSession();
 

@@ -13,7 +13,7 @@ import Image from "next/image";
 
 export default function SideNav() {
   return (
-    <div className="flex">
+    <div className="flex fixed h-full">
       <Sidebar
         className="max-md:hidden w-[210px]"
         aria-label="Default sidebar example"

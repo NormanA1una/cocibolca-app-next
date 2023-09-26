@@ -50,7 +50,6 @@ const createProduct = async (formData: ProductForm) => {
 
 export default function AddProduct() {
   const [isLoading, setIsLoading] = useState(false);
-  // const [supplier, setSupplier] = useState("");
   const [dataSupplier, setDataSupplier] = useState<SupplierForm[]>([]);
   const { register, handleSubmit, reset, control } = useForm<ProductForm>();
   const router = useRouter();

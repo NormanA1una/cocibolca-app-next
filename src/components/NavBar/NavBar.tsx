@@ -9,7 +9,11 @@ export default function NavBar() {
   const { data: session } = useSession() as any;
 
   return (
-    <Navbar fluid rounded className="w-full max-md:hidden rounded-none p-6">
+    <Navbar
+      fluid
+      rounded
+      className="fixed w-[calc(100vw-210px)] max-md:hidden rounded-none p-6"
+    >
       <Navbar.Brand>
         <span className="self-center whitespace-nowrap text-3xl font-semibold dark:text-white">
           Licorería Cocibolca

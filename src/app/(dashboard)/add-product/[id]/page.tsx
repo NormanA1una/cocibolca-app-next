@@ -30,7 +30,12 @@ export default function ProductDetail({ params: { id } }: Params) {
   const getProduct = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/product-supplier/${id}`
+        `http://localhost:8000/product-supplier/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+          },
+        }
       );
       return response.data;
     } catch (error) {
@@ -40,7 +45,11 @@ export default function ProductDetail({ params: { id } }: Params) {
   };
   const getSupplier = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/supplier");
+      const response = await axios.get("http://localhost:8000/supplier", {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+        },
+      });
 
       return response.data.reverse();
     } catch (error) {
@@ -114,7 +123,12 @@ export default function ProductDetail({ params: { id } }: Params) {
     try {
       const response = await axios.put(
         `http://localhost:8000/product-supplier/${id}`,
-        formData
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+          },
+        }
       );
 
       console.log(response.data);
