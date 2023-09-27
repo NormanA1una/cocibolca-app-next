@@ -126,18 +126,18 @@ export default function AddProduct() {
           Añadir nuevo producto
         </h1>
 
-        <section className="flex">
+        <section className="flex flex-col md:flex-row">
           <div className="mb-6">
             <label
               htmlFor="nombreProducto"
-              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white max-w-[338px]"
             >
               Nombre del Producto
             </label>
             <input
               type="text"
               id="nombreProducto"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-[429px] p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full md:w-[429px] p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
               placeholder="Nombre del producto"
               required
               {...register("nombreProducto")}
@@ -145,29 +145,38 @@ export default function AddProduct() {
           </div>
           <span className="flex-1"></span>
 
-          <div className="mt-1 flex items-center">
-            <Controller
-              name="nombreSupplier"
-              control={control}
-              render={({ field }) => (
-                <Select
-                  defaultValue={"-"}
-                  style={{ width: 157, height: 42 }}
-                  onChange={(data) => {
-                    field.onChange(data ? data.valueOf() : null);
-                  }}
-                  options={dataSupplier.map((data) => ({
-                    value: data.nombreProveedor,
-                    label: data.nombreProveedor,
-                  }))}
-                ></Select>
-              )}
-            />
+          <div className="mb-6">
+            <label
+              htmlFor="nombreSupplier"
+              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white "
+            >
+              Proveedor
+            </label>
+            <div className="mt-1 flex items-center min-w-[338px] md:min-w-[157px]">
+              <Controller
+                name="nombreSupplier"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    id="nombreSupplier"
+                    defaultValue={"-"}
+                    style={{ width: "100%", height: 42 }}
+                    onChange={(data) => {
+                      field.onChange(data ? data.valueOf() : null);
+                    }}
+                    options={dataSupplier.map((data) => ({
+                      value: data.nombreProveedor,
+                      label: data.nombreProveedor,
+                    }))}
+                  ></Select>
+                )}
+              />
+            </div>
           </div>
         </section>
 
-        <section className="flex">
-          <div className="mb-6 mr-10">
+        <section className="flex flex-col md:flex-row">
+          <div className="mb-6 md:mr-10 max-w-[338px]">
             <label
               htmlFor="cantidadAMano"
               className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -177,13 +186,13 @@ export default function AddProduct() {
             <input
               type="number"
               id="cantidadAMano"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-[150px] p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full md:w-[150px] p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
               required
               {...register("cantidadAMano")}
             />
           </div>
 
-          <div className="mb-6">
+          <div className="mb-6 max-w-[338px]">
             <label
               htmlFor="cantidadContada"
               className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -193,7 +202,7 @@ export default function AddProduct() {
             <input
               type="number"
               id="cantidadContada"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-[150px] p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full md:w-[150px] p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
               required
               {...register("cantidadContada")}
             />
@@ -206,10 +215,11 @@ export default function AddProduct() {
               name="fechaDeInventario"
               control={control}
               render={({ field, fieldState }) => (
-                <div>
+                <div className="flex items-center">
                   <label className="text-sm">Fecha de Inventario</label>
+
                   <DatePicker
-                    className="ml-2"
+                    className="ml-12 md:ml-2"
                     format={"YYYY/MM/DD"}
                     style={{ height: 42, width: 157 }}
                     status={fieldState.error ? "error" : undefined}
@@ -227,7 +237,7 @@ export default function AddProduct() {
           </div>
         </section>
 
-        <div className="mb-6">
+        <div className="my-6 max-[768px]:flex max-[768px]:flex-col max-[768px]:items-center">
           <label
             htmlFor="presentacion"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"

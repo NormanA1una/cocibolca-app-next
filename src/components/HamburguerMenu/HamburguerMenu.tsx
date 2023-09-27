@@ -2,27 +2,58 @@
 
 import { useState } from "react";
 import Navigation from "./Navigation";
+import Image from "next/image";
+import { signOut, useSession } from "next-auth/react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 
 export default function HamburguerMenu() {
   const [isNavOpen, setIsNavOpen] = useState(false);
+  const { data: session } = useSession() as any;
 
   return (
-    <div className="flex items-center justify-between border-b border-gray-400 py-8 md:hidden">
-      <a href="/" className="ml-3">
-        <h2>Licoreria Cocibolca</h2>
-      </a>
+    <div className="flex items-center justify-between border-b border-gray-400 py-4 px-2 md:hidden bg-[#9d4edd]">
+      <div className="flex items-center">
+        <Image
+          src={"/licoreriaCocibolcaLogo.jpg"}
+          width={100}
+          height={100}
+          alt="Logo Licorería Cocibolca"
+          className="rounded-md mr-6"
+        />
+        {session?.user ? (
+          <h1 className="font-normal text-xl flex flex-col items-center text-neutral-50">
+            Hola nuevamente
+            {
+              <span className="font-bold">
+                {session?.user?.username || sessionStorage.getItem("lobbyName")}
+              </span>
+            }
+          </h1>
+        ) : (
+          <>
+            <div
+              role="status"
+              className="w-[300px] animate-pulse h-[15px] bg-gray-200 rounded-full dark:bg-gray-700"
+            ></div>
+          </>
+        )}
+      </div>
       <nav className="mr-3">
         <section className="MOBILE-MENU flex lg:hidden">
           <div
-            className="HAMBURGER-ICON space-y-2"
+            className="HAMBURGER-ICON space-y-2 border-2 p-2 rounded-md hover:bg-[#7b2cbf]"
             onClick={() => setIsNavOpen((prev) => !prev)}
           >
-            <span className="block h-0.5 w-8 animate-pulse bg-gray-600"></span>
-            <span className="block h-0.5 w-8 animate-pulse bg-gray-600"></span>
-            <span className="block h-0.5 w-8 animate-pulse bg-gray-600"></span>
+            <span className="block h-0.5 w-8 animate-pulse bg-neutral-50"></span>
+            <span className="block h-0.5 w-8 animate-pulse bg-neutral-50"></span>
+            <span className="block h-0.5 w-8 animate-pulse bg-neutral-50"></span>
           </div>
 
-          <div className={isNavOpen ? "showMenuNav" : "hideMenuNav"}>
+          <div
+            style={{ background: "#e0aaff" }}
+            className={`${isNavOpen ? "showMenuNav" : "hideMenuNav"}`}
+          >
             <div
               className="absolute top-0 right-0 px-8 py-8"
               onClick={() => setIsNavOpen(false)}
@@ -42,6 +73,24 @@ export default function HamburguerMenu() {
             </div>
             <ul className="flex flex-col items-center justify-between min-h-[250px]">
               <Navigation closeNav={setIsNavOpen} />
+
+              <button
+                className=" text-red-700"
+                onClick={() => {
+                  sessionStorage.removeItem("lobbyName");
+                  sessionStorage.removeItem("userRol");
+                  signOut({
+                    callbackUrl: "/",
+                  });
+                }}
+              >
+                Cerrar Sesión{" "}
+                <FontAwesomeIcon
+                  icon={faRightFromBracket}
+                  rotation={180}
+                  className="ml-2"
+                />
+              </button>
             </ul>
           </div>
         </section>

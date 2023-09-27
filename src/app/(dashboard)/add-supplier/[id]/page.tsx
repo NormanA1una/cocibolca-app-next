@@ -1,7 +1,11 @@
 "use client";
 
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FormControlLabel, Switch } from "@mui/material";
 import axios from "axios";
+import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
@@ -113,6 +117,20 @@ export default function SupplierDetail({ params: { id } }: Params) {
 
   return (
     <div className="flex flex-col flex-1 justify-center p-4 border border-dashed my-auto">
+      <div className="w-full max-w-[700px] mx-auto text-right mb-4">
+        <Link href={"/suppliers"}>
+          <button
+            type="button"
+            className=" bg-red-600 rounded-md p-2 text-neutral-50 w-[100px]"
+          >
+            <FontAwesomeIcon
+              icon={faArrowLeft}
+              className=" text-neutral-50 mr-1"
+            />{" "}
+            Volver
+          </button>
+        </Link>
+      </div>
       <form
         className="animate__animated animate__fadeIn bg-neutral-50 border-opacity-50 rounded p-5 w-full max-w-[700px] mx-auto shadow-sm h-screen md:h-[550px]"
         onSubmit={handleSubmit(onSubmit)}
@@ -198,26 +216,22 @@ export default function SupplierDetail({ params: { id } }: Params) {
               />
             )}
           />
-          {/* <input
-            type="checkbox"
-            {...register("estado", {
-              onChange: (e) => {
-                onCheck(e);
-              },
-            })}
-            className="mr-4"
-          />
-          <button
-            className={`${
-              isSupplierActive
-                ? "bg-green-600 p-2 text-neutral-50 rounded-md w-[200px]"
-                : "bg-red-600 p-2 text-neutral-50 rounded-md w-[200px]"
-            }`}
-            type="button"
-            disabled
+        </div>
+        <div className="mb-6">
+          <label
+            htmlFor="logo"
+            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            {isSupplierActive ? "Activo" : "Inactivo"}
-          </button> */}
+            Logo del Proveedor
+          </label>
+          <Image
+            src="/no-image-icon-23485.png"
+            alt="No image png"
+            width={150}
+            height={150}
+            className=""
+          ></Image>
+          <input type="file" disabled {...register("logo")} />
         </div>
 
         <div className=" text-center">

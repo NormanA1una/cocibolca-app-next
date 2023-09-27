@@ -61,9 +61,9 @@ export default function CreateUser() {
   };
 
   return (
-    <div className="min-h-screen flex items-center container mx-auto">
+    <div className="min-h-screen flex items-center container mx-auto ">
       <form
-        className="animate__animated animate__fadeInLeftBig bg-neutral-50 border-opacity-50 rounded p-5 w-full max-w-[700px] mx-auto shadow-sm h-screen md:h-[550px]"
+        className="animate__animated animate__fadeInLeftBig bg-neutral-50 border-opacity-50 rounded px-5 pb-5 pt-40 md:p-5 w-full max-w-[700px] mx-auto shadow-sm h-screen md:h-[550px]"
         onSubmit={handleSubmit(onSubmit)}
       >
         <h1 className="text-center font-bold text-3xl my-8">Crear usuario</h1>
