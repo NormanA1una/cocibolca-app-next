@@ -22,7 +22,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="">
       <NextAuthProvider>
-        <body className={`${inter.className} bg-[#B9B0DF]`}>{children}</body>
+        <body className={`${inter.className} bg-backgroundViolet`}>
+          {children}
+        </body>
       </NextAuthProvider>
     </html>
   );

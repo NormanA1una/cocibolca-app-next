@@ -102,7 +102,7 @@ export default function AddProduct() {
   };
 
   return (
-    <div className="flex flex-col flex-1 justify-center p-4 border border-dashed">
+    <div className="flex flex-col flex-1 justify-center p-4 pt-20">
       <div className="w-full max-w-[700px] mx-auto text-right mb-4">
         <Link href={"/product"}>
           <button

@@ -19,6 +19,7 @@ type SupplierForm = {
   tipoDeProducto: string;
   estado: boolean;
   logo: string;
+  nombreImage: string;
 };
 
 type ProductForm = {
