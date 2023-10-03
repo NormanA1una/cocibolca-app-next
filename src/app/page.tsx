@@ -78,7 +78,7 @@ function Login() {
         >
           <form
             method="post"
-            className="animate__animated animate__fadeInLeftBig bg-neutral-50 border-opacity-50 rounded p-5 w-full max-w-[700px] mx-auto shadow-sm h-screen md:h-[450px]"
+            className="animate__animated animate__fadeInLeftBig bg-neutral-50 border-opacity-50 rounded px-5 pb-5 pt-40 md:p-5 w-full max-w-[700px] mx-auto shadow-md h-screen md:h-[450px]"
             onSubmit={handleSubmit(onSubmit)}
           >
             <h1 className="text-center font-bold text-3xl my-8">

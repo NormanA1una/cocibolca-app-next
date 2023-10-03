@@ -145,7 +145,7 @@ export default function Product() {
   };
 
   return (
-    <div className="flex flex-col flex-1 p-4 border border-dashed pt-20">
+    <div className="flex flex-col flex-1 p-4 pt-20">
       <div className="animate__animated animate__fadeIn flex flex-col">
         <h1 className="font-bold text-2xl mb-16">Módulo de productos</h1>
         <div className="flex justify-end">
@@ -162,8 +162,15 @@ export default function Product() {
 
       <input
         type="text"
-        className="w-[300px] rounded-lg"
-        placeholder="Producto..."
+        className="w-[380px] md:hidden rounded-lg"
+        placeholder="Producto...                                                      🔍"
+        onChange={(e) => setSearch(e.target.value)}
+      />
+
+      <input
+        type="text"
+        className="w-[300px] rounded-lg hidden md:block"
+        placeholder="Producto...                                      🔍"
         onChange={(e) => setSearch(e.target.value)}
       />
 

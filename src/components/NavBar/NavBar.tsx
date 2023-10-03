@@ -12,7 +12,7 @@ export default function NavBar() {
     <Navbar
       fluid
       rounded
-      className="fixed w-[calc(100vw-210px)] max-md:hidden rounded-none p-6"
+      className="fixed w-[calc(100vw-210px)] max-md:hidden rounded-none p-6 bg-[#D3BCF0]"
     >
       <Navbar.Brand>
         <span className="self-center whitespace-nowrap text-3xl font-semibold dark:text-white">

@@ -11,6 +11,9 @@ import withReactContent from "sweetalert2-react-content";
 import NoDataSuppliers from "@/components/NoDataSuppliers/NoDataSuppliers";
 import { FormControlLabel, Switch } from "@mui/material";
 import { useSession } from "next-auth/react";
+import { deleteObject, ref } from "firebase/storage";
+import { storage } from "../../../../firebaseConfig";
+import { message } from "antd";
 
 const mySwal = withReactContent(Swal);
 
@@ -70,9 +73,24 @@ export default function Suppliers() {
       });
   }, []);
 
-  const handleDelete = (supplierId: number, index: number) => {
+  const handleDelete = (dataSupplier: SupplierForm, index: number) => {
+    if (dataSupplier.nombreImage) {
+      const name = dataSupplier.nombreImage;
+
+      const storageRef = ref(storage, `images/${name}`);
+
+      deleteObject(storageRef)
+        .then(() => {
+          message.success("Imagen Removida!");
+        })
+        .catch((error) => {
+          message.error(error);
+        });
+    } else {
+      message.error("File not found");
+    }
     try {
-      deleteSupplier(supplierId).then(() => {
+      deleteSupplier(dataSupplier.id).then(() => {
         const updateData = [...(data as SupplierForm[])];
         updateData.splice(index, 1);
 
@@ -143,14 +161,14 @@ export default function Suppliers() {
   };
 
   return (
-    <div className="flex flex-col flex-1 p-4 border border-dashed pt-20">
+    <div className="flex flex-col flex-1 p-4 pt-20">
       <div className="animate__animated animate__fadeIn flex flex-col">
         <h1 className="font-bold text-2xl mb-16">Módulo de proveedores</h1>
         <div className="flex justify-end">
           <Link href={"/add-supplier"}>
             <button
               type="button"
-              className=" bg-slate-800 hover:bg-gray-900 text-neutral-50 p-3 rounded-md w-[200px]"
+              className=" bg-gray-800 hover:bg-gray-900 text-neutralWhite p-3 rounded-md w-[200px]"
             >
               Agregar proveedor
             </button>
@@ -160,7 +178,7 @@ export default function Suppliers() {
 
       <div className={`${"relative overflow-x-auto mt-8"} `}>
         <table className="w-full text-sm text-left text-gray-500 ">
-          <thead className="text-xs text-neutral-50 uppercase bg-slate-800">
+          <thead className="text-xs text-neutralWhite uppercase bg-accentPurple">
             <tr>
               <th scope="col" className="px-6 py-3">
                 ID
@@ -214,14 +232,19 @@ export default function Suppliers() {
                     </td>
                     <td className="px-6 py-4">
                       {data.logo ? (
-                        "Hay algo"
+                        <Image
+                          src={data.logo}
+                          alt={`Logo ${data.nombreProveedor}`}
+                          width={50}
+                          height={50}
+                        />
                       ) : (
                         <Image
                           src="/no-image-icon-23485.png"
                           alt="No image png"
                           width={50}
                           height={50}
-                        ></Image>
+                        />
                       )}
                     </td>
                     <td className="px-6 py-4">
@@ -250,7 +273,7 @@ export default function Suppliers() {
                               })
                               .then((res) => {
                                 if (res.value) {
-                                  handleDelete(data.id, i);
+                                  handleDelete(data, i);
                                 }
                               });
                           }}

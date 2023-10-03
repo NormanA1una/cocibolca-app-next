@@ -22,7 +22,7 @@ export default function Navigation({
               }}
               className={
                 isActive
-                  ? " text-blue-400 flex items-center gap-1"
+                  ? " text-neutral-50 flex items-center gap-1"
                   : " text-neutral-950 flex items-center gap-1"
               }
               href={link.pathname}
