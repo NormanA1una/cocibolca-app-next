@@ -101,21 +101,11 @@ export default function UserList() {
     <div className="flex flex-col flex-1 p-4 pt-20">
       <div className="animate__animated animate__fadeIn flex flex-col">
         <h1 className="font-bold text-2xl mb-16">Lista de usuarios activos</h1>
-        {/* <div className="flex justify-end">
-          <Link href={"/suppliers"}>
-          <button
-          type="button"
-          className=" bg-slate-800 hover:bg-gray-900 text-neutral-50 p-3 rounded-md w-[200px]"
-          >
-          Agregar proveedor
-          </button>
-          </Link>
-        </div> */}
       </div>
 
       <div className={`${"relative overflow-x-auto mt-8"} `}>
         <table className="w-full text-sm text-left text-gray-500 ">
-          <thead className="text-xs text-neutral-50 uppercase bg-slate-800">
+          <thead className="text-xs text-neutralWhite uppercase bg-accentPurple">
             <tr>
               <th scope="col" className="px-6 py-3">
                 ID
@@ -172,7 +162,7 @@ export default function UserList() {
                           className={`${
                             data.username ===
                             sessionStorage.getItem("lobbyName")
-                              ? "bg-slate-500 p-3 rounded-md text-neutral-50"
+                              ? "bg-gray-500 p-3 rounded-md text-neutral-50"
                               : "bg-red-700 p-3 rounded-md text-neutral-50"
                           } `}
                           disabled={

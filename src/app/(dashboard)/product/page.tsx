@@ -4,16 +4,18 @@ import NoDataSuppliers from "@/components/NoDataSuppliers/NoDataSuppliers";
 import {
   faPenToSquare,
   faTrash,
-  faList,
+  faClockRotateLeft,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Select } from "antd";
+import { Select, message } from "antd";
 import axios from "axios";
+import { deleteObject, ref } from "firebase/storage";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
+import { storage } from "../../../../firebaseConfig";
 
 const mySwal = withReactContent(Swal);
 
@@ -75,11 +77,24 @@ export default function Product() {
       });
   }, []);
 
-  console.log(data);
+  const handleDelete = (dataProduct: ProductForm, index: number) => {
+    if (dataProduct.nombreImage) {
+      const name = dataProduct.nombreImage;
 
-  const handleDelete = (supplierId: number, index: number) => {
+      const storageRef = ref(storage, `images/product/${name}`);
+
+      deleteObject(storageRef)
+        .then(() => {
+          message.success("Imagen Removida!");
+        })
+        .catch((error) => {
+          message.error(error);
+        });
+    } else {
+      message.error("File not found");
+    }
     try {
-      deleteSupplier(supplierId).then(() => {
+      deleteSupplier(dataProduct.id).then(() => {
         const updateData = [...(data as ProductForm[])];
         updateData.splice(index, 1);
 
@@ -152,7 +167,7 @@ export default function Product() {
           <Link href={"/add-product"}>
             <button
               type="button"
-              className=" bg-slate-800 hover:bg-gray-900 text-neutral-50 p-3 rounded-md w-[200px] mb-3"
+              className=" bg-gray-800 hover:bg-gray-900 text-neutralWhite p-3 rounded-md w-[200px] mb-3"
             >
               Agregar producto
             </button>
@@ -176,7 +191,7 @@ export default function Product() {
 
       <div className={`${"relative overflow-x-auto mt-3"} `}>
         <table className="w-full text-sm text-left text-gray-500 ">
-          <thead className="text-xs text-neutral-50 uppercase bg-slate-800">
+          <thead className="text-xs text-neutralWhite uppercase bg-accentPurple">
             <tr>
               <th scope="col" className="px-6 py-3">
                 ID
@@ -206,104 +221,95 @@ export default function Product() {
           </thead>
           <tbody className="min-h-[415px]">
             {!loading
-              ? pageData /* data
-                  ?.filter((item) => {
-                    return search.toLowerCase() === ""
-                      ? item
-                      : item.nombreProducto
-                          .toLowerCase()
-                          .includes(search.toLowerCase()) ||
-                          item.nombreSupplier
-                            .toLowerCase()
-                            .includes(search.toLowerCase()) ||
-                          formatDate(item.fechaDeInventario).includes(
-                            search.toString()
-                          );
-                  }) */
-                  .map((data, i) => (
-                    <tr
-                      key={data.id}
-                      className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+              ? pageData.map((data, i) => (
+                  <tr
+                    key={data.id}
+                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                  >
+                    <th
+                      scope="row"
+                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                     >
-                      <th
-                        scope="row"
-                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                      >
-                        {data.id}
-                      </th>
-                      <td className="px-6 py-4">{data.nombreProducto}</td>
-                      <td className="px-6 py-4">{data.cantidadAMano}</td>
-                      <td className="px-6 py-4">{data.cantidadContada}</td>
-                      <td className="px-6 py-4">
-                        {data.presentacion ? (
-                          "Hay algo"
-                        ) : (
-                          <Image
-                            src="/no-image-icon-23485.png"
-                            alt="No image png"
-                            width={50}
-                            height={50}
-                          ></Image>
-                        )}
-                      </td>
-                      <td className="px-6 py-4">
-                        {formatDate(data.fechaDeInventario)}
-                      </td>
-                      <td className="px-6 py-4">{data.nombreSupplier}</td>
-                      <td className="px-6 py-4">
-                        <div className="flex justify-center">
-                          <Link href={`/add-product/${data.id}`}>
-                            <button
-                              type="button"
-                              className=" bg-blue-700 p-3 rounded-md text-neutral-50 mr-4"
-                            >
-                              <FontAwesomeIcon
-                                icon={faPenToSquare}
-                                style={{ color: "#ffffff" }}
-                              />
-                            </button>
-                          </Link>
-
-                          <Link href={`/product-history`}>
-                            <button
-                              type="button"
-                              className=" bg-slate-500 p-3 rounded-md text-neutral-50 mr-4"
-                            >
-                              <FontAwesomeIcon
-                                icon={faList}
-                                style={{ color: "#ffffff" }}
-                              />
-                            </button>
-                          </Link>
-
+                      {data.id}
+                    </th>
+                    <td className="px-6 py-4">{data.nombreProducto}</td>
+                    <td className="px-6 py-4">{data.cantidadAMano}</td>
+                    <td className="px-6 py-4">{data.cantidadContada}</td>
+                    <td className="px-6 py-4">
+                      {data.presentacion ? (
+                        <Image
+                          src={data.presentacion}
+                          alt={`Logo ${data.nombreProducto}`}
+                          width={50}
+                          height={50}
+                        />
+                      ) : (
+                        <Image
+                          src="/no-image-icon-23485.png"
+                          alt="No image png"
+                          width={50}
+                          height={50}
+                        />
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      {formatDate(data.fechaDeInventario)}
+                    </td>
+                    <td className="px-6 py-4">{data.nombreSupplier}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex justify-center">
+                        <Link href={`/add-product/${data.id}`}>
                           <button
-                            onClick={() => {
-                              mySwal
-                                .fire({
-                                  title: "SE ELIMINARA UN PROVEEDOR",
-                                  text: `Estas seguro que quieres eliminar a ${data.nombreProducto}`,
-                                  icon: "warning",
-                                  showConfirmButton: true,
-                                  showCancelButton: true,
-                                })
-                                .then((res) => {
-                                  if (res.value) {
-                                    handleDelete(data.id, i);
-                                  }
-                                });
-                            }}
                             type="button"
-                            className=" bg-red-700 p-3 rounded-md text-neutral-50"
+                            className=" bg-blue-700 p-3 rounded-md text-neutral-50 mr-4"
                           >
                             <FontAwesomeIcon
-                              icon={faTrash}
+                              icon={faPenToSquare}
                               style={{ color: "#ffffff" }}
                             />
                           </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
+                        </Link>
+
+                        <Link href={`/product-history`}>
+                          <button
+                            type="button"
+                            className=" bg-gray-500 p-3 rounded-md text-neutral-50 mr-4"
+                          >
+                            <FontAwesomeIcon
+                              icon={faClockRotateLeft}
+                              style={{ color: "#ffffff" }}
+                            />
+                          </button>
+                        </Link>
+
+                        <button
+                          onClick={() => {
+                            mySwal
+                              .fire({
+                                title: "SE ELIMINARA UN PROVEEDOR",
+                                text: `Estas seguro que quieres eliminar a ${data.nombreProducto}`,
+                                icon: "warning",
+                                showConfirmButton: true,
+                                showCancelButton: true,
+                              })
+                              .then((res) => {
+                                if (res.value) {
+                                  handleDelete(data, i);
+                                }
+                              });
+                          }}
+                          type="button"
+                          className=" bg-red-700 p-3 rounded-md text-neutral-50"
+                        >
+                          <FontAwesomeIcon
+                            icon={faTrash}
+                            style={{ color: "#ffffff" }}
+                          />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
               : Array.from({ length: 5 }).map((_, i) =>
                   data.length ? null : <TableSkeleton key={i} />
                 )}

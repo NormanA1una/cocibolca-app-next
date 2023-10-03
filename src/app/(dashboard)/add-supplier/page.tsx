@@ -3,7 +3,7 @@
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faUser } from "@fortawesome/free-solid-svg-icons";
@@ -19,11 +19,12 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { storage } from "../../../../firebaseConfig";
+import FormSkeleton from "@/components/FormSkeleton/FormSkeleton";
 
 const mySwal = withReactContent(Swal);
 
 export default function AddSupplier() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSupplierActive, setIsSupplierActive] = useState(false);
   const { register, handleSubmit, reset, control, setValue } =
     useForm<SupplierForm>();
@@ -32,6 +33,10 @@ export default function AddSupplier() {
   const [isUploading, setIsUploading] = useState(false);
   const [progressUpload, setProgressUpload] = useState(0);
   const router = useRouter();
+
+  useEffect(() => {
+    setIsLoading(false);
+  });
 
   const createSupplier = async (formData: SupplierForm) => {
     try {
@@ -66,7 +71,7 @@ export default function AddSupplier() {
       await createSupplier(data);
       mySwal
         .fire({
-          title: "Usuario creado con exito!",
+          title: "Proveedor creado con exito!",
           icon: "success",
         })
         .then((resp) => {
@@ -138,7 +143,6 @@ export default function AddSupplier() {
 
             setValue("logo", fileUrl);
             setValue("nombreImage", imageFile?.name);
-            console.log(imageFile.name);
           });
         }
       );
@@ -173,189 +177,195 @@ export default function AddSupplier() {
 
   return (
     <div className="flex flex-col flex-1 justify-center pt-8">
-      <div className="w-full max-w-[700px] mx-auto text-right mb-4">
-        <Link href={"/suppliers"}>
-          <button
-            type="button"
-            className=" bg-red-600 rounded-md p-2 text-neutralWhite w-[100px]"
+      {!isLoading ? (
+        <>
+          <div className="w-full max-w-[700px] mx-auto text-right mb-4">
+            <Link href={"/suppliers"}>
+              <button
+                type="button"
+                className=" bg-red-600 rounded-md p-2 text-neutralWhite w-[100px]"
+              >
+                <FontAwesomeIcon
+                  icon={faArrowLeft}
+                  className=" text-neutralWhite mr-1"
+                />{" "}
+                Volver
+              </button>
+            </Link>
+          </div>
+          <form
+            className="animate__animated animate__fadeIn bg-neutralWhite border-opacity-50 rounded p-5 w-full max-w-[700px] mx-auto shadow-sm h-screen md:h-[750px]"
+            onSubmit={handleSubmit(onSubmit)}
           >
-            <FontAwesomeIcon
-              icon={faArrowLeft}
-              className=" text-neutralWhite mr-1"
-            />{" "}
-            Volver
-          </button>
-        </Link>
-      </div>
-      <form
-        className="animate__animated animate__fadeIn bg-neutralWhite border-opacity-50 rounded p-5 w-full max-w-[700px] mx-auto shadow-sm h-screen md:h-[750px]"
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <h1 className="text-center font-bold text-3xl my-8">
-          Agregar proveedor
-        </h1>
+            <h1 className="text-center font-bold text-3xl my-8">
+              Agregar proveedor
+            </h1>
 
-        <div className="mb-6">
-          <label
-            htmlFor="nombreProveedor"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >
-            Nombre del Proveedor
-          </label>
-          <input
-            type="text"
-            id="nombreProveedor"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
-            placeholder="compañia ejemplo S.A."
-            required
-            {...register("nombreProveedor")}
-          />
-        </div>
-
-        <div className="mb-6">
-          <label
-            htmlFor="tipoDeProducto"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >
-            Tipo del Producto
-          </label>
-          <input
-            type="text"
-            id="tipoDeProducto"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
-            placeholder="Cerveza... Ron... Snacks..."
-            required
-            {...register("tipoDeProducto")}
-          />
-        </div>
-
-        <div className="mb-6 flex justify-end items-center">
-          <Controller
-            name="estado"
-            control={control}
-            defaultValue={isSupplierActive}
-            render={({ field }) => (
-              <FormControlLabel
-                control={
-                  <Switch
-                    {...field}
-                    checked={isSupplierActive}
-                    inputProps={{ type: "checkbox", role: "switch" }}
-                    color="success"
-                    size="medium"
-                    onChange={(e) => {
-                      field.onChange(e);
-                      onCheck(e);
-                    }}
-                  />
-                }
-                label={`Estado del proveedor: ${
-                  isSupplierActive ? "Activo" : "Inactivo"
-                }`}
-                labelPlacement="start"
+            <div className="mb-6">
+              <label
+                htmlFor="nombreProveedor"
+                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Nombre del Proveedor
+              </label>
+              <input
+                type="text"
+                id="nombreProveedor"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
+                placeholder="compañia ejemplo S.A."
+                required
+                {...register("nombreProveedor")}
               />
-            )}
-          />
-        </div>
+            </div>
 
-        <div className="mb-10">
-          <label
-            htmlFor="logo"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >
-            Logo del Proveedor
-          </label>
-          {downloadUrl ? (
-            <>
-              <div className="h-[150px]">
+            <div className="mb-6">
+              <label
+                htmlFor="tipoDeProducto"
+                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Tipo del Producto
+              </label>
+              <input
+                type="text"
+                id="tipoDeProducto"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
+                placeholder="Cerveza... Ron... Snacks..."
+                required
+                {...register("tipoDeProducto")}
+              />
+            </div>
+
+            <div className="mb-6 flex justify-end items-center">
+              <Controller
+                name="estado"
+                control={control}
+                defaultValue={isSupplierActive}
+                render={({ field }) => (
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        {...field}
+                        checked={isSupplierActive}
+                        inputProps={{ type: "checkbox", role: "switch" }}
+                        color="success"
+                        size="medium"
+                        onChange={(e) => {
+                          field.onChange(e);
+                          onCheck(e);
+                        }}
+                      />
+                    }
+                    label={`Estado del proveedor: ${
+                      isSupplierActive ? "Activo" : "Inactivo"
+                    }`}
+                    labelPlacement="start"
+                  />
+                )}
+              />
+            </div>
+
+            <div className="mb-10">
+              <label
+                htmlFor="logo"
+                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Logo del Proveedor
+              </label>
+              {downloadUrl ? (
+                <>
+                  <div className="h-[150px] flex flex-col justify-center">
+                    <Image
+                      src={downloadUrl}
+                      width={150}
+                      height={150}
+                      alt="Logo del Proveedor"
+                    />
+                  </div>
+                </>
+              ) : (
                 <Image
-                  src={downloadUrl}
+                  src="/noImageFix.jpg"
+                  alt="No image png"
                   width={150}
                   height={150}
-                  alt="Logo del Proveedor"
+                  className=""
                 />
+              )}
+
+              <Progress percent={progressUpload} />
+
+              <div className={isUploading ? "flex justify-center" : "flex"}>
+                {isUploading ? (
+                  <div className="flex">
+                    <div className="flex items-center">
+                      <input
+                        className="p-2 rounded-md border-gray-400 "
+                        type="hidden"
+                        {...register("nombreImage")}
+                        placeholder={imageFile?.name}
+                      />
+                    </div>
+                    <input
+                      className=" border-none"
+                      type="hidden"
+                      {...register("logo")}
+                      placeholder={downloadUrl}
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <input
+                      type="file"
+                      onChange={(files) => handleSelectedFile(files)}
+                    />
+                    <span className={!isUploading && "flex-1"}></span>
+                  </>
+                )}
+                {imageFile ? (
+                  <div className={isUploading ? "flex" : "flex justify-center"}>
+                    <div className="">
+                      <button
+                        hidden={!isUploading}
+                        type="button"
+                        className="p-2 bg-red-600 rounded-lg shadow text-neutralWhite mr"
+                        onClick={handleRemoveFile}
+                      >
+                        Remover Imagen
+                      </button>
+                    </div>
+
+                    <div>
+                      <button
+                        hidden={isUploading}
+                        type="button"
+                        className="p-2 bg-accentPurple rounded-lg shadow text-neutralWhite mr-3"
+                        onClick={handleUploadFile}
+                      >
+                        Cargar Imagen
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  ""
+                )}
               </div>
-            </>
-          ) : (
-            <Image
-              src="/noImageFix.jpg"
-              alt="No image png"
-              width={150}
-              height={150}
-              className=""
-            />
-          )}
+            </div>
 
-          <Progress percent={progressUpload} />
-
-          <div className={isUploading ? "flex justify-center" : "flex"}>
-            {isUploading ? (
-              <div className="flex">
-                <div className="flex items-center">
-                  <input
-                    className="p-2 rounded-md border-gray-400 "
-                    type="hidden"
-                    {...register("nombreImage")}
-                    placeholder={imageFile?.name}
-                  />
-                </div>
-                <input
-                  className=" border-none"
-                  type="hidden"
-                  {...register("logo")}
-                  placeholder={downloadUrl}
-                />
-              </div>
-            ) : (
-              <>
-                <input
-                  type="file"
-                  onChange={(files) => handleSelectedFile(files)}
-                />
-                <span className={!isUploading && "flex-1"}></span>
-              </>
-            )}
-            {imageFile ? (
-              <div className={isUploading ? "flex" : "flex justify-center"}>
-                <div className="">
-                  <button
-                    hidden={!isUploading}
-                    type="button"
-                    className="p-2 bg-red-600 rounded-lg shadow text-neutralWhite mr"
-                    onClick={handleRemoveFile}
-                  >
-                    Remover Imagen
-                  </button>
-                </div>
-
-                <div>
-                  <button
-                    hidden={isUploading}
-                    type="button"
-                    className="p-2 bg-accentPurple rounded-lg shadow text-neutralWhite mr-3"
-                    onClick={handleUploadFile}
-                  >
-                    Cargar Imagen
-                  </button>
-                </div>
-              </div>
-            ) : (
-              ""
-            )}
-          </div>
-        </div>
-
-        <div className="flex justify-center">
-          <button
-            disabled={isLoading}
-            type="submit"
-            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-[200px] px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          >
-            {isLoading ? "Creando..." : "Crear proveedor"}
-            <FontAwesomeIcon icon={faUser} className=" ml-2" />
-          </button>
-        </div>
-      </form>
+            <div className="flex justify-center">
+              <button
+                disabled={isLoading}
+                type="submit"
+                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-[200px] px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              >
+                {isLoading ? "Creando..." : "Crear proveedor"}
+                <FontAwesomeIcon icon={faUser} className=" ml-2" />
+              </button>
+            </div>
+          </form>
+        </>
+      ) : (
+        <FormSkeleton />
+      )}
     </div>
   );
 }

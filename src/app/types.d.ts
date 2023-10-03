@@ -30,6 +30,7 @@ type ProductForm = {
   presentacion: string;
   fechaDeInventario: Date;
   nombreSupplier: string;
+  nombreImage: string;
 };
 
 type UserData = {

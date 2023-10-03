@@ -10,8 +10,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { DatePicker, Select } from "antd";
+import { DatePicker, Progress, Select, message } from "antd";
 import dayjs from "dayjs";
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
+import { storage } from "../../../../firebaseConfig";
 
 const mySwal = withReactContent(Swal);
 
@@ -51,7 +58,13 @@ const createProduct = async (formData: ProductForm) => {
 export default function AddProduct() {
   const [isLoading, setIsLoading] = useState(false);
   const [dataSupplier, setDataSupplier] = useState<SupplierForm[]>([]);
-  const { register, handleSubmit, reset, control } = useForm<ProductForm>();
+  const { register, handleSubmit, reset, control, setValue } =
+    useForm<ProductForm>();
+  const [imageFile, setImageFile] = useState<File>();
+  const [downloadUrl, setDownloadUrl] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  const [progressUpload, setProgressUpload] = useState(0);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -101,17 +114,93 @@ export default function AddProduct() {
     }
   };
 
+  const handleSelectedFile = (files: any) => {
+    if (files.target.files && files.target.files[0].size < 10000000) {
+      setImageFile(files.target.files[0]);
+
+      console.log(files.target.files[0]);
+    } else {
+      message.error("El tamaño de la imagen es muy grande");
+    }
+  };
+
+  const handleUploadFile = () => {
+    if (imageFile) {
+      const name = imageFile.name;
+
+      const storageRef = ref(storage, `images/product/${name}`);
+      const uploadTask = uploadBytesResumable(storageRef, imageFile);
+
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+
+          setProgressUpload(progress);
+
+          switch (snapshot.state) {
+            case "paused":
+              console.log("Upload is paused");
+              break;
+            case "running":
+              console.log("Upload is running");
+              break;
+          }
+        },
+        (error) => {
+          message.error(error.message);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((fileUrl) => {
+            setDownloadUrl(fileUrl);
+
+            setValue("presentacion", fileUrl);
+            setValue("nombreImage", imageFile?.name);
+            console.log(imageFile.name);
+          });
+        }
+      );
+    } else {
+      message.error("File not found");
+    }
+
+    setIsUploading(true);
+  };
+
+  const handleRemoveFile = () => {
+    if (imageFile) {
+      const name = imageFile.name;
+
+      const storageRef = ref(storage, `images/product/${name}`);
+
+      deleteObject(storageRef)
+        .then(() => {
+          message.success("Imagen Removida!");
+        })
+        .catch((error) => {
+          message.error(error);
+        });
+    } else {
+      message.error("File not found");
+    }
+
+    setProgressUpload(0);
+    setDownloadUrl("");
+    setIsUploading(false);
+  };
+
   return (
     <div className="flex flex-col flex-1 justify-center p-4 pt-20">
       <div className="w-full max-w-[700px] mx-auto text-right mb-4">
         <Link href={"/product"}>
           <button
             type="button"
-            className=" bg-red-600 rounded-md p-2 text-neutral-50 w-[100px]"
+            className=" bg-red-600 rounded-md p-2 text-neutralWhite w-[100px]"
           >
             <FontAwesomeIcon
               icon={faArrowLeft}
-              className=" text-neutral-50 mr-1"
+              className="text-neutralWhite mr-1"
             />{" "}
             Volver
           </button>
@@ -119,7 +208,7 @@ export default function AddProduct() {
       </div>
 
       <form
-        className="animate__animated animate__fadeIn bg-neutral-50 border-opacity-50 rounded p-5 w-full max-w-[700px] mx-auto shadow-sm h-screen md:h-[680px]"
+        className="animate__animated animate__fadeIn bg-neutralWhite border-opacity-50 rounded p-5 w-full max-w-[700px] mx-auto shadow-sm h-screen md:h-[680px]"
         onSubmit={handleSubmit(onSubmit)}
       >
         <h1 className="text-center font-bold text-3xl my-8">
@@ -239,24 +328,89 @@ export default function AddProduct() {
 
         <div className="my-6 max-[768px]:flex max-[768px]:flex-col max-[768px]:items-center">
           <label
-            htmlFor="presentacion"
+            htmlFor="logo"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            Logo del Proveedor
+            Presentación del Producto
           </label>
-          <Image
-            src="/no-image-icon-23485.png"
-            alt="No image png"
-            width={150}
-            height={150}
-            className=""
-          ></Image>
-          <input
-            id="presentacion"
-            type="file"
-            disabled
-            {...register("presentacion")}
-          />
+          {downloadUrl ? (
+            <>
+              <div className="h-[150px]">
+                <Image
+                  src={downloadUrl}
+                  width={150}
+                  height={150}
+                  alt="Logo del Proveedor"
+                />
+              </div>
+            </>
+          ) : (
+            <Image
+              src="/noImageFix.jpg"
+              alt="No image png"
+              width={150}
+              height={150}
+              className=""
+            />
+          )}
+
+          <Progress percent={progressUpload} />
+
+          <div className={isUploading ? "flex justify-center" : "flex"}>
+            {isUploading ? (
+              <div className="flex">
+                <div className="flex items-center">
+                  <input
+                    className="p-2 rounded-md border-gray-400 "
+                    type="hidden"
+                    {...register("nombreImage")}
+                    placeholder={imageFile?.name}
+                  />
+                </div>
+                <input
+                  className=" border-none"
+                  type="hidden"
+                  {...register("presentacion")}
+                  placeholder={downloadUrl}
+                />
+              </div>
+            ) : (
+              <>
+                <input
+                  type="file"
+                  onChange={(files) => handleSelectedFile(files)}
+                />
+                <span className={!isUploading && "flex-1"}></span>
+              </>
+            )}
+            {imageFile ? (
+              <div className={isUploading ? "flex" : "flex justify-center"}>
+                <div className="">
+                  <button
+                    hidden={!isUploading}
+                    type="button"
+                    className="p-2 bg-red-600 rounded-lg shadow text-neutralWhite mr"
+                    onClick={handleRemoveFile}
+                  >
+                    Remover Imagen
+                  </button>
+                </div>
+
+                <div>
+                  <button
+                    hidden={isUploading}
+                    type="button"
+                    className="p-2 bg-accentPurple rounded-lg shadow text-neutralWhite mr-3"
+                    onClick={handleUploadFile}
+                  >
+                    Cargar Imagen
+                  </button>
+                </div>
+              </div>
+            ) : (
+              ""
+            )}
+          </div>
         </div>
 
         <div className="flex justify-center">

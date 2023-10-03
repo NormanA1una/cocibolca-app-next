@@ -34,8 +34,8 @@ export default function NavigationSideNav() {
             icon={link.icon}
             className={
               isActive
-                ? " text-neutralBlack flex items-center gap-1"
-                : " text-neutralWhite flex items-center gap-1"
+                ? " text-neutralBlack flex items-center gap-1 font-bold"
+                : " text-neutralWhite flex items-center gap-1 font-bold"
             }
           >
             <p>{link.name}</p>

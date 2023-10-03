@@ -22,7 +22,7 @@ export default function HamburguerMenu() {
           className="rounded-md mr-6"
         />
         {session?.user ? (
-          <h1 className="font-normal text-xl flex flex-col items-center text-neutral-50">
+          <h1 className="font-normal text-xl flex flex-col items-center text-neutralWhite">
             Hola nuevamente
             {
               <span className="font-bold">
@@ -45,9 +45,9 @@ export default function HamburguerMenu() {
             className="HAMBURGER-ICON space-y-2 border-2 p-2 rounded-md hover:bg-[#7b2cbf]"
             onClick={() => setIsNavOpen((prev) => !prev)}
           >
-            <span className="block h-0.5 w-8 animate-pulse bg-neutral-50"></span>
-            <span className="block h-0.5 w-8 animate-pulse bg-neutral-50"></span>
-            <span className="block h-0.5 w-8 animate-pulse bg-neutral-50"></span>
+            <span className="block h-0.5 w-8 animate-pulse bg-neutralWhite"></span>
+            <span className="block h-0.5 w-8 animate-pulse bg-neutralWhite"></span>
+            <span className="block h-0.5 w-8 animate-pulse bg-neutralWhite"></span>
           </div>
 
           <div

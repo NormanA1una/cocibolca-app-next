@@ -48,7 +48,7 @@ export default function SideNav() {
             <span className="flex-1"></span>
 
             <ul className="flex justify-around">
-              <li>
+              <li className="hover:bg-accentPurple p-2.5 rounded-full">
                 <Link
                   href={
                     "https://www.facebook.com/norman.arandaluna?mibextid=2JQ9oc"
@@ -58,16 +58,16 @@ export default function SideNav() {
                   <FontAwesomeIcon
                     icon={faFacebook}
                     size="2xl"
-                    className=" text-blue-900"
+                    className=" text-blue-900 hover:text-neutralBlack"
                   />
                 </Link>
               </li>
-              <li>
+              <li className="hover:bg-accentPurple p-2.5 rounded-full">
                 <Link href={"https://github.com/NormanA1una"} target="_blank">
                   <FontAwesomeIcon icon={faGithub} size="2xl" />
                 </Link>
               </li>
-              <li>
+              <li className="hover:bg-accentPurple p-2.5 rounded-full">
                 <Link
                   href={
                     "https://www.linkedin.com/in/norman-aranda-luna-7294a3285"
@@ -77,7 +77,7 @@ export default function SideNav() {
                   <FontAwesomeIcon
                     icon={faLinkedin}
                     size="2xl"
-                    className=" text-blue-500"
+                    className=" text-blue-700 hover:text-neutralBlack"
                   />
                 </Link>
               </li>
