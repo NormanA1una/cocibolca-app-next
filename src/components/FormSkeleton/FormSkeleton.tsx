@@ -1,7 +1,4 @@
-import { faArrowLeft, faUser } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FormControlLabel, Switch } from "@mui/material";
-import { Progress } from "antd";
 import Image from "next/image";
 
 export default function FormSkeleton() {

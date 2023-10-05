@@ -290,7 +290,7 @@ export default function Suppliers() {
                   </tr>
                 ))
               : Array.from({ length: 5 }).map((_, i) =>
-                  data.length ? null : <TableSkeleton key={i} />
+                  data.length ? null : <TableSkeleton2 key={i} />
                 )}
           </tbody>
         </table>
@@ -301,7 +301,7 @@ export default function Suppliers() {
   );
 }
 
-const TableSkeleton = () => {
+const TableSkeleton2 = () => {
   return (
     <>
       <tr

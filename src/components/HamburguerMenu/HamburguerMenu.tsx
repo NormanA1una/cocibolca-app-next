@@ -9,7 +9,7 @@ import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 
 export default function HamburguerMenu() {
   const [isNavOpen, setIsNavOpen] = useState(false);
-  const { data: session } = useSession() as any;
+  const { data: session } = useSession();
 
   return (
     <div className="flex items-center justify-between border-b border-gray-400 py-4 px-2 md:hidden bg-[#9d4edd]">

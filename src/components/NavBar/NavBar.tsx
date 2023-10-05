@@ -1,12 +1,12 @@
 "use client";
 
 import { Dropdown, Navbar } from "flowbite-react";
-import { signOut, useSession, getProviders } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 
 export default function NavBar() {
-  const { data: session } = useSession() as any;
+  const { data: session } = useSession();
 
   return (
     <Navbar
