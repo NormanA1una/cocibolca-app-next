@@ -36,6 +36,8 @@ const getProduct = async () => {
 };
 
 const deleteSupplier = async (id: number) => {
+  console.log(id);
+
   try {
     const response = await axios.delete(
       `http://localhost:8000/product-supplier/${id}`,
@@ -45,6 +47,24 @@ const deleteSupplier = async (id: number) => {
         },
       }
     );
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting item:", error);
+    throw error;
+  }
+};
+
+const deleteProductHistory = async (id: number) => {
+  try {
+    const response = await axios.delete(
+      `http://localhost:8000/product-history/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+        },
+      }
+    );
+
     return response.data;
   } catch (error) {
     console.error("Error deleting item:", error);
@@ -104,6 +124,8 @@ export default function Product() {
         if (!updateData.length) {
           setDataNotFound(true);
         }
+
+        deleteProductHistory(dataProduct.id);
 
         mySwal.fire({
           title: "Producto eliminado",
@@ -321,7 +343,9 @@ export default function Product() {
       {/* Botones de paginación */}
       <div
         className={
-          dataNotFound ? "hidden" : "flex justify-center items-center mt-3"
+          dataNotFound || loading
+            ? "hidden"
+            : "flex justify-center items-center mt-3"
         }
       >
         <Select

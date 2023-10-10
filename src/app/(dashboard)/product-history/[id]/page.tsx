@@ -2,13 +2,20 @@
 
 import NoDataSuppliers from "@/components/NoDataSuppliers/NoDataSuppliers";
 import TableSkeleton from "@/components/TableSkeleton/TableSkeleton";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowLeft,
+  faCalendarXmark,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Select } from "antd";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+
+const mySwal = withReactContent(Swal);
 
 const useFetchData = ({ id }: { id: string }) => {
   const [data, setData] = useState<ProductHistoryForm[]>([]);
@@ -52,15 +59,36 @@ const useFetchData = ({ id }: { id: string }) => {
       });
   }, []);
 
-  return { data, loading, dataNotFound };
+  return { data, setData, loading, dataNotFound, setDataNotFound };
 };
 
 export default function ProductHistory({ params }: ProductHistoryProps) {
-  const { data, loading, dataNotFound } = useFetchData({ id: params.id });
+  const { data, loading, dataNotFound, setData, setDataNotFound } =
+    useFetchData({
+      id: params.id,
+    });
 
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemPerPage] = useState<number>(5);
+
+  const deleteProductHistory = async (id: number) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:8000/product-history/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting item:", error);
+      throw error;
+    }
+  };
 
   const formatDate = (fechaDeInventario: Date) => {
     if (!fechaDeInventario) {
@@ -104,36 +132,110 @@ export default function ProductHistory({ params }: ProductHistoryProps) {
     setCurrentPage(page);
   };
 
+  const handleDeleteHistory = () => {
+    const productId = params.id;
+
+    try {
+      deleteProductHistory(parseInt(productId)).then(() => {
+        const updateData = [...(data as ProductHistoryForm[])];
+        updateData.splice(0);
+
+        setData(updateData);
+
+        if (!updateData.length) {
+          setDataNotFound(true);
+        }
+
+        mySwal.fire({
+          title: "Historial eliminado",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 1500, // Cierra automáticamente después de 1.5 segundos
+        });
+      });
+    } catch (error) {
+      console.log("Error deleting history:", error);
+      throw error;
+    }
+  };
+
   return (
     <div className="flex flex-col flex-1 p-4 pt-20">
-      <div className="text-right mb-4">
-        <Link href={"/product"}>
+      {!loading ? (
+        <div className="text-right mb-4">
+          <Link href={"/product"}>
+            <button
+              type="button"
+              className=" bg-red-600 rounded-md p-2 text-neutralWhite w-[100px] h-[48px]"
+            >
+              <FontAwesomeIcon
+                icon={faArrowLeft}
+                className="text-neutralWhite mr-1 h-[14px] w-[12px]"
+              />{" "}
+              Volver
+            </button>
+          </Link>
+        </div>
+      ) : (
+        <div className="flex justify-end mb-4">
           <button
             type="button"
-            className=" bg-red-600 rounded-md p-2 text-neutralWhite w-[100px]"
+            className=" bg-red-600 rounded-md p-2 h-[40px] text-neutralWhite w-[100px] flex items-center"
           >
-            <FontAwesomeIcon
-              icon={faArrowLeft}
-              className="text-neutralWhite mr-1"
-            />{" "}
-            Volver
+            <div className="bg-gray-300 rounded-full dark:bg-gray-600 w-24 h-2.5"></div>
           </button>
-        </Link>
+        </div>
+      )}
+
+      <div className="flex justify-between">
+        <div className={dataNotFound ? "hidden" : ""}>
+          <input
+            type="text"
+            className="w-[380px] md:hidden rounded-lg"
+            placeholder="Producto...                                                      🔍"
+            onChange={(e) => setSearch(e.target.value)}
+          />
+
+          <input
+            type="text"
+            className="w-[300px] rounded-lg hidden md:block"
+            placeholder="Producto...                                      🔍"
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+        {!loading ? (
+          <button
+            hidden={dataNotFound}
+            type="button"
+            className="bg-accentPurple text-neutralWhite p-2 rounded-md"
+            onClick={() => {
+              mySwal
+                .fire({
+                  title: "SE ELIMINARA EL HISTORIAL",
+                  text: `Estas seguro que quieres eliminar el historial de: ${data[0].nombreProducto}`,
+                  icon: "warning",
+                  showConfirmButton: true,
+                  showCancelButton: true,
+                })
+                .then((res) => {
+                  if (res.value) {
+                    handleDeleteHistory();
+                  }
+                });
+            }}
+          >
+            <FontAwesomeIcon icon={faCalendarXmark} className="mr-1" /> Eliminar
+            el historial
+          </button>
+        ) : (
+          <button
+            type="button"
+            className=" bg-accentPurple rounded-md p-2 h-[40px] text-neutralWhite w-[190px] flex items-center"
+          >
+            <div className="bg-gray-300 rounded-full dark:bg-gray-600 w-full h-2.5"></div>
+          </button>
+        )}
       </div>
-
-      <input
-        type="text"
-        className="w-[380px] md:hidden rounded-lg"
-        placeholder="Producto...                                                      🔍"
-        onChange={(e) => setSearch(e.target.value)}
-      />
-
-      <input
-        type="text"
-        className="w-[300px] rounded-lg hidden md:block"
-        placeholder="Producto...                                      🔍"
-        onChange={(e) => setSearch(e.target.value)}
-      />
 
       <div className={`${"relative overflow-x-auto mt-3"} `}>
         <table className="w-full text-sm text-left text-gray-500 ">
@@ -190,7 +292,9 @@ export default function ProductHistory({ params }: ProductHistoryProps) {
       {/* Botones de paginación */}
       <div
         className={
-          dataNotFound ? "hidden" : "flex justify-center items-center mt-3"
+          dataNotFound || loading
+            ? "hidden"
+            : "flex justify-center items-center mt-3"
         }
       >
         <Select
