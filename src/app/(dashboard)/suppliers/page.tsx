@@ -14,12 +14,13 @@ import { useSession } from "next-auth/react";
 import { deleteObject, ref } from "firebase/storage";
 import { storage } from "../../../../firebaseConfig";
 import { message } from "antd";
+import TableSkeleton from "@/components/TableSkeleton/TableSkeleton";
 
 const mySwal = withReactContent(Swal);
 
-export default function Suppliers() {
-  const [data, setData] = useState<SupplierForm[]>([]);
+const useFetchData = () => {
   const [dataNotFound, setDataNotFound] = useState(false);
+  const [data, setData] = useState<SupplierForm[]>([]);
   const [loading, setLoading] = useState(true);
   const { data: session } = useSession();
 
@@ -34,23 +35,6 @@ export default function Suppliers() {
       return response.data.reverse();
     } catch (error) {
       console.log("Error:", error);
-      throw error;
-    }
-  };
-
-  const deleteSupplier = async (id: number) => {
-    try {
-      const response = await axios.delete(
-        `http://localhost:8000/supplier/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
-          },
-        }
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error deleting item:", error);
       throw error;
     }
   };
@@ -72,6 +56,13 @@ export default function Suppliers() {
         // throw error;
       });
   }, []);
+
+  return { dataNotFound, setDataNotFound, data, setData, loading };
+};
+
+export default function Suppliers() {
+  const { dataNotFound, setDataNotFound, data, setData, loading } =
+    useFetchData();
 
   const handleDelete = (dataSupplier: SupplierForm, index: number) => {
     if (dataSupplier.nombreImage) {
@@ -109,6 +100,23 @@ export default function Suppliers() {
       });
     } catch (error) {
       console.log("Error deleting supplier:", error);
+      throw error;
+    }
+  };
+
+  const deleteSupplier = async (id: number) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:8000/supplier/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting item:", error);
       throw error;
     }
   };
@@ -237,6 +245,7 @@ export default function Suppliers() {
                           alt={`Logo ${data.nombreProveedor}`}
                           width={50}
                           height={50}
+                          className="h-auto w-auto"
                         />
                       ) : (
                         <Image
@@ -290,18 +299,18 @@ export default function Suppliers() {
                   </tr>
                 ))
               : Array.from({ length: 5 }).map((_, i) =>
-                  data.length ? null : <TableSkeleton2 key={i} />
+                  data.length ? null : <TableSkeleton n={5} key={i} />
                 )}
           </tbody>
         </table>
       </div>
 
-      {dataNotFound && <NoDataSuppliers />}
+      {dataNotFound && <NoDataSuppliers text="Proveedores" />}
     </div>
   );
 }
 
-const TableSkeleton2 = () => {
+/* const TableSkeleton = () => {
   return (
     <>
       <tr
@@ -362,4 +371,4 @@ const TableSkeleton2 = () => {
       </tr>
     </>
   );
-};
+}; */

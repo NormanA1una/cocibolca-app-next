@@ -33,6 +33,15 @@ type ProductForm = {
   nombreImage: string;
 };
 
+type ProductHistoryForm = {
+  id: number;
+  nombreProducto: string;
+  cantidadAMano: number;
+  cantidadContada: number;
+  fechaDeInventario: Date;
+  nombreSupplier: string;
+};
+
 type UserData = {
   id: number;
   correo: string;
@@ -54,6 +63,12 @@ type NavLinksTypes = {
 
 type DataPagination = {
   selected: number;
+};
+
+type ProductHistoryProps = {
+  params: {
+    id: string;
+  };
 };
 
 type CloseNavFunction = (isOpen: boolean) => void;

@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import Link from "next/link";
 import { useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";

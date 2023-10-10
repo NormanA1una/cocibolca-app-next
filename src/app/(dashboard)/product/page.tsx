@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { storage } from "../../../../firebaseConfig";
+import TableSkeleton from "@/components/TableSkeleton/TableSkeleton";
 
 const mySwal = withReactContent(Swal);
 
@@ -238,6 +239,7 @@ export default function Product() {
                     <td className="px-6 py-4">
                       {data.presentacion ? (
                         <Image
+                          className="w-auto h-auto"
                           src={data.presentacion}
                           alt={`Logo ${data.nombreProducto}`}
                           width={50}
@@ -270,7 +272,7 @@ export default function Product() {
                           </button>
                         </Link>
 
-                        <Link href={`/product-history`}>
+                        <Link href={`/product-history/${data.id}`}>
                           <button
                             type="button"
                             className=" bg-gray-500 p-3 rounded-md text-neutral-50 mr-4"
@@ -311,13 +313,17 @@ export default function Product() {
                   </tr>
                 ))
               : Array.from({ length: 5 }).map((_, i) =>
-                  data.length ? null : <TableSkeleton key={i} />
+                  data.length ? null : <TableSkeleton n={7} key={i} />
                 )}
           </tbody>
         </table>
       </div>
       {/* Botones de paginación */}
-      <div className="flex justify-center items-center mt-3">
+      <div
+        className={
+          dataNotFound ? "hidden" : "flex justify-center items-center mt-3"
+        }
+      >
         <Select
           placeholder="Items por página"
           style={{ width: 157, height: 42 }}
@@ -347,12 +353,12 @@ export default function Product() {
         ))}
       </div>
 
-      {dataNotFound && <NoDataSuppliers />}
+      {dataNotFound && <NoDataSuppliers text={"Productos"} />}
     </div>
   );
 }
 
-const TableSkeleton = () => {
+/* const TableSkeleton = () => {
   return (
     <>
       <tr
@@ -413,4 +419,4 @@ const TableSkeleton = () => {
       </tr>
     </>
   );
-};
+}; */
