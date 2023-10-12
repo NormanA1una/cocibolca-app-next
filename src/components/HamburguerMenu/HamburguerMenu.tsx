@@ -19,7 +19,7 @@ export default function HamburguerMenu() {
           width={100}
           height={100}
           alt="Logo Licorería Cocibolca"
-          className="rounded-md mr-6"
+          className="rounded-md mr-5 w-auto h-auto"
         />
         {session?.user ? (
           <h1 className="font-normal text-xl flex flex-col items-center text-neutralWhite">

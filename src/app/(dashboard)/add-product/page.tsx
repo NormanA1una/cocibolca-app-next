@@ -64,6 +64,7 @@ export default function AddProduct() {
   const [downloadUrl, setDownloadUrl] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [progressUpload, setProgressUpload] = useState(0);
+  const [buttonHidden, setButtonHiden] = useState(false);
 
   const router = useRouter();
 
@@ -117,6 +118,7 @@ export default function AddProduct() {
   const handleSelectedFile = (files: any) => {
     if (files.target.files && files.target.files[0].size < 10000000) {
       setImageFile(files.target.files[0]);
+      setButtonHiden(false);
 
       console.log(files.target.files[0]);
     } else {
@@ -188,11 +190,12 @@ export default function AddProduct() {
     setProgressUpload(0);
     setDownloadUrl("");
     setIsUploading(false);
+    setButtonHiden(true);
   };
 
   return (
-    <div className="flex flex-col flex-1 justify-center p-4 pt-20">
-      <div className="w-full max-w-[700px] mx-auto text-right mb-4">
+    <div className="flex flex-col flex-1 justify-center p-4 md:pt-20">
+      <div className="w-full max-w-[700px] text-right md:mx-auto mb-4">
         <Link href={"/product"}>
           <button
             type="button"
@@ -208,7 +211,7 @@ export default function AddProduct() {
       </div>
 
       <form
-        className="animate__animated animate__fadeIn bg-neutralWhite border-opacity-50 rounded p-5 w-full max-w-[700px] mx-auto shadow-sm h-screen md:h-[680px]"
+        className="animate__animated animate__fadeIn bg-neutralWhite border-opacity-50 rounded p-5 w-full max-w-[700px] mx-auto shadow-sm h-[950px] md:h-[680px]"
         onSubmit={handleSubmit(onSubmit)}
       >
         <h1 className="text-center font-bold text-3xl my-8">
@@ -326,7 +329,7 @@ export default function AddProduct() {
           </div>
         </section>
 
-        <div className="my-6 max-[768px]:flex max-[768px]:flex-col max-[768px]:items-center">
+        <div className="mt-6 mb-5 max-[768px]:flex max-[768px]:flex-col max-[768px]:items-center">
           <label
             htmlFor="logo"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -335,8 +338,9 @@ export default function AddProduct() {
           </label>
           {downloadUrl ? (
             <>
-              <div className="h-[150px]">
+              <div className="h-[150px] flex items-center">
                 <Image
+                  className="h-auto max-h-[150px] w-auto max-w-[150px]"
                   src={downloadUrl}
                   width={150}
                   height={150}
@@ -356,7 +360,13 @@ export default function AddProduct() {
 
           <Progress percent={progressUpload} />
 
-          <div className={isUploading ? "flex justify-center" : "flex"}>
+          <div
+            className={
+              isUploading
+                ? "flex justify-center"
+                : "flex flex-col md:flex-row h-[101px] md:h-auto"
+            }
+          >
             {isUploading ? (
               <div className="flex">
                 <div className="flex items-center">
@@ -376,10 +386,12 @@ export default function AddProduct() {
               </div>
             ) : (
               <>
-                <input
-                  type="file"
-                  onChange={(files) => handleSelectedFile(files)}
-                />
+                <div className="flex w-full max-w-[323px]">
+                  <input
+                    type="file"
+                    onChange={(files) => handleSelectedFile(files)}
+                  />
+                </div>
                 <span className={!isUploading && "flex-1"}></span>
               </>
             )}
@@ -389,7 +401,11 @@ export default function AddProduct() {
                   <button
                     hidden={!isUploading}
                     type="button"
-                    className="p-2 bg-red-600 rounded-lg shadow text-neutralWhite mr"
+                    className={
+                      !isUploading
+                        ? "p-2 bg-red-600 rounded-lg shadow text-neutralWhite"
+                        : "p-2 mb-[60px] md:mb-0 bg-red-600 rounded-lg shadow text-neutralWhite"
+                    }
                     onClick={handleRemoveFile}
                   >
                     Remover Imagen
@@ -398,9 +414,9 @@ export default function AddProduct() {
 
                 <div>
                   <button
-                    hidden={isUploading}
+                    hidden={isUploading || buttonHidden}
                     type="button"
-                    className="p-2 bg-accentPurple rounded-lg shadow text-neutralWhite mr-3"
+                    className="p-2 bg-accentPurple rounded-lg shadow text-neutralWhite mt-5 md:mt-0 w-[180px]"
                     onClick={handleUploadFile}
                   >
                     Cargar Imagen
@@ -419,7 +435,7 @@ export default function AddProduct() {
             type="submit"
             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-[200px] px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           >
-            {isLoading ? "Actualizando..." : "Actualizar producto"}
+            {isLoading ? "Actualizando..." : "Añadir producto"}
             <FontAwesomeIcon icon={faUser} className=" ml-2" />
           </button>
         </div>

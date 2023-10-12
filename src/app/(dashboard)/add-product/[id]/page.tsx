@@ -36,6 +36,7 @@ export default function ProductDetail({ params: { id } }: Params) {
   const [downloadUrl, setDownloadUrl] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [progressUpload, setProgressUpload] = useState(0);
+  const [buttonHidden, setButtonHiden] = useState(false);
 
   const router = useRouter();
 
@@ -157,6 +158,7 @@ export default function ProductDetail({ params: { id } }: Params) {
   const handleSelectedFile = (files: any) => {
     if (files.target.files && files.target.files[0].size < 10000000) {
       setImageFile(files.target.files[0]);
+      setButtonHiden(false);
 
       console.log(files.target.files[0]);
     } else {
@@ -168,7 +170,7 @@ export default function ProductDetail({ params: { id } }: Params) {
     if (imageFile) {
       const name = imageFile.name;
 
-      const storageRef = ref(storage, `images/${name}`);
+      const storageRef = ref(storage, `images/product/${name}`);
       const uploadTask = uploadBytesResumable(storageRef, imageFile);
 
       uploadTask.on(
@@ -213,7 +215,7 @@ export default function ProductDetail({ params: { id } }: Params) {
     if (imageFile) {
       const name = imageFile.name;
 
-      const storageRef = ref(storage, `images/${name}`);
+      const storageRef = ref(storage, `images/product/${name}`);
 
       deleteObject(storageRef)
         .then(() => {
@@ -229,13 +231,14 @@ export default function ProductDetail({ params: { id } }: Params) {
     setProgressUpload(0);
     setDownloadUrl("");
     setIsUploading(false);
+    setButtonHiden(true);
   };
 
   const handleRemoveOldFile = () => {
     if (dataProduct) {
       const name = dataProduct.nombreImage;
 
-      const storageRef = ref(storage, `images/${name}`);
+      const storageRef = ref(storage, `images/product/${name}`);
 
       deleteObject(storageRef)
         .then(() => {
@@ -254,16 +257,16 @@ export default function ProductDetail({ params: { id } }: Params) {
   };
 
   return (
-    <div className="flex flex-col flex-1 justify-center p-4 border border-dashed">
-      <div className="w-full max-w-[700px] mx-auto text-right mb-4">
+    <div className="flex flex-col flex-1 justify-center p-4 pt-10">
+      <div className="w-full max-w-[700px] md:mx-auto text-right mb-4">
         <Link href={"/product"}>
           <button
             type="button"
-            className=" bg-red-600 rounded-md p-2 text-neutral-50 w-[100px]"
+            className=" bg-red-600 rounded-md p-2 text-neutralWhite w-[100px]"
           >
             <FontAwesomeIcon
               icon={faArrowLeft}
-              className=" text-neutral-50 mr-1"
+              className=" text-neutralWhite mr-1"
             />{" "}
             Volver
           </button>
@@ -271,15 +274,15 @@ export default function ProductDetail({ params: { id } }: Params) {
       </div>
 
       <form
-        className="animate__animated animate__fadeIn bg-neutralWhite border-opacity-50 rounded p-5 w-full max-w-[700px] mx-auto shadow-sm h-screen md:h-[680px]"
+        className="animate__animated animate__fadeIn bg-neutralWhite border-opacity-50 rounded p-5 w-full max-w-[700px] mx-auto shadow-sm h-[1050px] md:h-[680px]"
         onSubmit={handleSubmit(onSubmit)}
       >
         <h1 className="text-center font-bold text-3xl my-8">
-          Añadir nuevo producto
+          Actualizar producto
         </h1>
 
-        <section className="flex">
-          <div className="mb-6 mr-4">
+        <section className="flex flex-col md:flex-row">
+          <div className="mb-6">
             <label
               htmlFor="id"
               className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -307,7 +310,7 @@ export default function ProductDetail({ params: { id } }: Params) {
             <input
               type="text"
               id="nombreProducto"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-[329px] p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full md:w-[329px] p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
               placeholder="Nombre del producto"
               required
               {...register("nombreProducto")}
@@ -316,29 +319,37 @@ export default function ProductDetail({ params: { id } }: Params) {
 
           <span className="flex-1"></span>
 
-          <div className="mt-1 flex items-center">
-            <Controller
-              name="nombreSupplier"
-              control={control}
-              render={({ field }) => (
-                <Select
-                  placeholder={dataProduct?.nombreSupplier}
-                  style={{ width: 157, height: 42 }}
-                  onChange={(data) => {
-                    field.onChange(data ? data.valueOf() : null);
-                  }}
-                  options={dataSupplier.map((data) => ({
-                    value: data.nombreProveedor,
-                    label: data.nombreProveedor,
-                  }))}
-                ></Select>
-              )}
-            />
+          <div className="mb-6">
+            <label
+              htmlFor="nombreSupplier"
+              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white "
+            >
+              Proveedor
+            </label>
+            <div className="mt-1 flex items-center min-w-[338px] md:min-w-[157px]">
+              <Controller
+                name="nombreSupplier"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    placeholder={dataProduct?.nombreSupplier}
+                    style={{ width: "100%", height: 42 }}
+                    onChange={(data) => {
+                      field.onChange(data ? data.valueOf() : null);
+                    }}
+                    options={dataSupplier.map((data) => ({
+                      value: data.nombreProveedor,
+                      label: data.nombreProveedor,
+                    }))}
+                  ></Select>
+                )}
+              />
+            </div>
           </div>
         </section>
 
-        <section className="flex">
-          <div className="mb-6 mr-10">
+        <section className="flex flex-col md:flex-row">
+          <div className="mb-6 md:mr-10 max-w-[338px]">
             <label
               htmlFor="cantidadAMano"
               className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -348,13 +359,13 @@ export default function ProductDetail({ params: { id } }: Params) {
             <input
               type="number"
               id="cantidadAMano"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-[150px] p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full md:w-[150px] p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
               required
               {...register("cantidadAMano")}
             />
           </div>
 
-          <div className="mb-6">
+          <div className="mb-6 max-w-[338px]">
             <label
               htmlFor="cantidadContada"
               className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -364,7 +375,7 @@ export default function ProductDetail({ params: { id } }: Params) {
             <input
               type="number"
               id="cantidadContada"
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-[150px] p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full md:w-[150px] p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
               required
               {...register("cantidadContada")}
             />
@@ -377,10 +388,10 @@ export default function ProductDetail({ params: { id } }: Params) {
               name="fechaDeInventario"
               control={control}
               render={({ field, fieldState }) => (
-                <div>
+                <div className="flex items-center">
                   <label className="text-sm">Fecha de Inventario</label>
                   <DatePicker
-                    className="ml-2"
+                    className="ml-12 md:ml-2"
                     format={"YYYY/MM/DD"}
                     style={{ height: 42, width: 157 }}
                     status={fieldState.error ? "error" : undefined}
@@ -398,7 +409,7 @@ export default function ProductDetail({ params: { id } }: Params) {
           </div>
         </section>
 
-        <div className="mb-6">
+        <div className="my-6 max-[768px]:flex max-[768px]:flex-col max-[768px]:items-center">
           <label
             htmlFor="logo"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -407,8 +418,9 @@ export default function ProductDetail({ params: { id } }: Params) {
           </label>
           {downloadUrl ? (
             <>
-              <div className="h-[150px] flex flex-col justify-center">
+              <div className="h-[150px] flex items-center">
                 <Image
+                  className="h-auto max-h-[150px] w-auto max-w-[150px]"
                   src={downloadUrl}
                   width={150}
                   height={150}
@@ -427,7 +439,13 @@ export default function ProductDetail({ params: { id } }: Params) {
 
           <Progress percent={progressUpload} />
 
-          <div className={isUploading ? "flex justify-center" : "flex"}>
+          <div
+            className={
+              isUploading
+                ? "flex justify-center"
+                : "flex flex-col md:flex-row h-[101px] md:h-auto"
+            }
+          >
             {isUploading ? (
               <div className="flex">
                 <div className="flex items-center">
@@ -460,7 +478,11 @@ export default function ProductDetail({ params: { id } }: Params) {
                   <button
                     hidden={!isUploading}
                     type="button"
-                    className="p-2 bg-red-600 rounded-lg shadow text-neutralWhite mr"
+                    className={
+                      !isUploading
+                        ? "p-2 bg-red-600 rounded-lg shadow text-neutralWhite"
+                        : "p-2 mb-[60px] md:mb-0 bg-red-600 rounded-lg shadow text-neutralWhite"
+                    }
                     onClick={handleRemoveFile}
                   >
                     Remover Imagen
@@ -469,7 +491,7 @@ export default function ProductDetail({ params: { id } }: Params) {
 
                 <div>
                   <button
-                    hidden={isUploading}
+                    hidden={isUploading || buttonHidden}
                     type="button"
                     className="p-2 bg-accentPurple rounded-lg shadow text-neutralWhite mr-3"
                     onClick={handleUploadFile}
@@ -490,7 +512,7 @@ export default function ProductDetail({ params: { id } }: Params) {
             type="submit"
             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-[200px] px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           >
-            {isLoading ? "Creando..." : "Crear proveedor"}
+            {isLoading ? "Actualizando..." : "Actualizar producto"}
             <FontAwesomeIcon icon={faUser} className=" ml-2" />
           </button>
         </div>

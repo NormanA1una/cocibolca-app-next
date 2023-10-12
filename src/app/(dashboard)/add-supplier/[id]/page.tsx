@@ -34,6 +34,7 @@ export default function SupplierDetail({ params: { id } }: Params) {
   const [downloadUrl, setDownloadUrl] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [progressUpload, setProgressUpload] = useState(0);
+  const [buttonHidden, setButtonHiden] = useState(false);
 
   const router = useRouter();
 
@@ -133,6 +134,7 @@ export default function SupplierDetail({ params: { id } }: Params) {
   const handleSelectedFile = (files: any) => {
     if (files.target.files && files.target.files[0].size < 10000000) {
       setImageFile(files.target.files[0]);
+      setButtonHiden(false);
 
       console.log(files.target.files[0]);
     } else {
@@ -205,6 +207,7 @@ export default function SupplierDetail({ params: { id } }: Params) {
     setProgressUpload(0);
     setDownloadUrl("");
     setIsUploading(false);
+    setButtonHiden(true);
   };
 
   const handleRemoveOldFile = () => {
@@ -230,7 +233,7 @@ export default function SupplierDetail({ params: { id } }: Params) {
   };
 
   return (
-    <div className="flex flex-col flex-1 justify-center pt-8">
+    <div className="flex flex-col flex-1 justify-center p-4 pt-8">
       <div className="w-full max-w-[700px] mx-auto text-right mb-4">
         <Link href={"/suppliers"}>
           <button
@@ -246,7 +249,7 @@ export default function SupplierDetail({ params: { id } }: Params) {
         </Link>
       </div>
       <form
-        className="animate__animated animate__fadeIn bg-neutralWhite border-opacity-50 rounded p-5 w-full max-w-[700px] mx-auto shadow-sm h-screen md:h-[800px] mb-4"
+        className="animate__animated animate__fadeIn bg-neutralWhite border-opacity-50 rounded p-5 w-full max-w-[700px] mx-auto shadow-sm h-[900] md:h-[800px]"
         onSubmit={handleSubmit(onSubmit)}
       >
         <h1 className="text-center font-bold text-3xl my-8">
@@ -332,7 +335,7 @@ export default function SupplierDetail({ params: { id } }: Params) {
           />
         </div>
 
-        <div className="mb-6">
+        <div className="mb-10">
           <label
             htmlFor="logo"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -341,8 +344,9 @@ export default function SupplierDetail({ params: { id } }: Params) {
           </label>
           {downloadUrl ? (
             <>
-              <div className="h-[150px] flex flex-col justify-center">
+              <div className="h-[150px] flex items-center">
                 <Image
+                  className="h-auto max-h-[150px] w-auto max-w-[150px]"
                   src={downloadUrl}
                   width={150}
                   height={150}
@@ -356,13 +360,19 @@ export default function SupplierDetail({ params: { id } }: Params) {
               alt="No image png"
               width={150}
               height={150}
-              className=""
+              className="h-auto max-h-[150px] w-auto max-w-[150px]"
             />
           )}
 
           <Progress percent={progressUpload} />
 
-          <div className={isUploading ? "flex justify-center" : "flex"}>
+          <div
+            className={
+              isUploading
+                ? "flex justify-center"
+                : "flex flex-col md:flex-row h-[101px] md:h-auto"
+            }
+          >
             {isUploading ? (
               <div className="flex">
                 <div className="flex items-center">
@@ -395,7 +405,11 @@ export default function SupplierDetail({ params: { id } }: Params) {
                   <button
                     hidden={!isUploading}
                     type="button"
-                    className="p-2 bg-red-600 rounded-lg shadow text-neutralWhite mr"
+                    className={
+                      !isUploading
+                        ? "p-2 bg-red-600 rounded-lg shadow text-neutralWhite mr"
+                        : "p-2 mb-[60px] md:mb-0 bg-red-600 rounded-lg shadow text-neutralWhite mr"
+                    }
                     onClick={handleRemoveFile}
                   >
                     Remover Imagen
@@ -404,7 +418,7 @@ export default function SupplierDetail({ params: { id } }: Params) {
 
                 <div>
                   <button
-                    hidden={isUploading}
+                    hidden={isUploading || buttonHidden}
                     type="button"
                     className="p-2 bg-accentPurple rounded-lg shadow text-neutralWhite mr-3"
                     onClick={handleUploadFile}

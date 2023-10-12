@@ -183,9 +183,9 @@ export default function Product() {
   };
 
   return (
-    <div className="flex flex-col flex-1 p-4 pt-20">
+    <div className="flex flex-col flex-1 p-4 pt-6 md:pt-20">
       <div className="animate__animated animate__fadeIn flex flex-col">
-        <h1 className="font-bold text-2xl mb-16">Módulo de productos</h1>
+        <h1 className="font-bold text-2xl mb-10">Módulo de productos</h1>
         <div className="flex justify-end">
           <Link href={"/add-product"}>
             <button
