@@ -11,23 +11,23 @@ export default function Navigation({
 
   return (
     <>
-      {NavLinks.map((link) => {
-        const isActive = pathname === link.pathname;
+      {NavLinks.map(({ name, pathname: linkPathname }) => {
+        const isActive = pathname === linkPathname;
 
         return (
-          <li key={link.name}>
+          <li key={name}>
             <Link
               onClick={() => {
                 closeNav(false);
               }}
               className={
                 isActive
-                  ? " text-neutral-50 flex items-center gap-1"
-                  : " text-neutral-950 flex items-center gap-1"
+                  ? " text-neutralWhite flex items-center gap-1"
+                  : " text-neutralBlack flex items-center gap-1"
               }
-              href={link.pathname}
+              href={linkPathname}
             >
-              {link.name}
+              {name}
             </Link>
           </li>
         );

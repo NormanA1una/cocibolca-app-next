@@ -40,7 +40,7 @@ export default function SideNav() {
               width={180}
               height={180}
               alt="Logo Licorería Cocibolca"
-              className="mx-auto rounded-md"
+              className="mx-auto rounded-md h-auto w-auto"
             />
             <Sidebar.ItemGroup>
               <NavigationSideNav />

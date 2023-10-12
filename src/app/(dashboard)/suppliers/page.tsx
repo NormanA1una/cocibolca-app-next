@@ -14,12 +14,13 @@ import { useSession } from "next-auth/react";
 import { deleteObject, ref } from "firebase/storage";
 import { storage } from "../../../../firebaseConfig";
 import { message } from "antd";
+import TableSkeleton from "@/components/TableSkeleton/TableSkeleton";
 
 const mySwal = withReactContent(Swal);
 
-export default function Suppliers() {
-  const [data, setData] = useState<SupplierForm[]>([]);
+const useFetchData = () => {
   const [dataNotFound, setDataNotFound] = useState(false);
+  const [data, setData] = useState<SupplierForm[]>([]);
   const [loading, setLoading] = useState(true);
   const { data: session } = useSession();
 
@@ -34,23 +35,6 @@ export default function Suppliers() {
       return response.data.reverse();
     } catch (error) {
       console.log("Error:", error);
-      throw error;
-    }
-  };
-
-  const deleteSupplier = async (id: number) => {
-    try {
-      const response = await axios.delete(
-        `http://localhost:8000/supplier/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
-          },
-        }
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error deleting item:", error);
       throw error;
     }
   };
@@ -72,6 +56,13 @@ export default function Suppliers() {
         // throw error;
       });
   }, []);
+
+  return { dataNotFound, setDataNotFound, data, setData, loading };
+};
+
+export default function Suppliers() {
+  const { dataNotFound, setDataNotFound, data, setData, loading } =
+    useFetchData();
 
   const handleDelete = (dataSupplier: SupplierForm, index: number) => {
     if (dataSupplier.nombreImage) {
@@ -109,6 +100,23 @@ export default function Suppliers() {
       });
     } catch (error) {
       console.log("Error deleting supplier:", error);
+      throw error;
+    }
+  };
+
+  const deleteSupplier = async (id: number) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:8000/supplier/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error deleting item:", error);
       throw error;
     }
   };
@@ -237,6 +245,7 @@ export default function Suppliers() {
                           alt={`Logo ${data.nombreProveedor}`}
                           width={50}
                           height={50}
+                          className="h-auto w-auto"
                         />
                       ) : (
                         <Image
@@ -290,76 +299,13 @@ export default function Suppliers() {
                   </tr>
                 ))
               : Array.from({ length: 5 }).map((_, i) =>
-                  data.length ? null : <TableSkeleton key={i} />
+                  data.length ? null : <TableSkeleton n={5} key={i} />
                 )}
           </tbody>
         </table>
       </div>
 
-      {dataNotFound && <NoDataSuppliers />}
+      {dataNotFound && <NoDataSuppliers text="Proveedores" />}
     </div>
   );
 }
-
-const TableSkeleton = () => {
-  return (
-    <>
-      <tr
-        role="status"
-        className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 animate-pulse"
-      >
-        <th
-          scope="row"
-          className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-        >
-          <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
-        </th>
-        <td className="px-6 py-4">
-          <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
-        </td>
-        <td className="px-6 py-4">
-          <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
-        </td>
-        <td className="px-6 py-4">
-          <button
-            type="button"
-            className={"bg-red-600 p-2 text-neutral-50 rounded-md w-[200px]"}
-            disabled={true}
-          >
-            Estado
-          </button>
-        </td>
-        <td className="px-6 py-4">
-          <Image
-            src="/no-image-icon-23485.png"
-            alt="No image png"
-            width={50}
-            height={50}
-          ></Image>
-        </td>
-        <td className="px-6 py-4">
-          <div className="flex justify-center">
-            <button
-              type="button"
-              className="bg-blue-700 p-3 rounded-md text-neutral-50 mr-4 w-[38px] h-[44px]"
-              disabled={true}
-            >
-              <FontAwesomeIcon
-                icon={faPenToSquare}
-                style={{ color: "#ffffff" }}
-              />
-            </button>
-
-            <button
-              type="button"
-              className="bg-red-700 p-3 rounded-md text-neutral-50 w-[36.25px] h-[44px]"
-              disabled={true}
-            >
-              <FontAwesomeIcon icon={faTrash} style={{ color: "#ffffff" }} />
-            </button>
-          </div>
-        </td>
-      </tr>
-    </>
-  );
-};

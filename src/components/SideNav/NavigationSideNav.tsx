@@ -4,7 +4,7 @@ import { Sidebar } from "flowbite-react";
 import { useSession } from "next-auth/react";
 
 export default function NavigationSideNav() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
 
   const pathname = usePathname();
 
