@@ -187,21 +187,32 @@ export default function ProductHistory({ params }: ProductHistoryProps) {
         </div>
       )}
 
-      <div className="flex justify-between">
+      <div className="flex justify-between items-center">
         <div className={dataNotFound ? "hidden" : ""}>
-          <input
-            type="text"
-            className="w-[380px] md:hidden rounded-lg"
-            placeholder="Producto...                                                      🔍"
-            onChange={(e) => setSearch(e.target.value)}
-          />
+          {!loading ? (
+            <input
+              type="text"
+              className="w-[300px] md:hidden rounded-lg"
+              placeholder="Producto...                                                      🔍"
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          ) : (
+            <div
+              role="status"
+              className="w-[350px] animate-pulse h-[15px] bg-gray-200 rounded-full dark:bg-gray-700"
+            ></div>
+          )}
 
-          <input
-            type="text"
-            className="w-[300px] rounded-lg hidden md:block"
-            placeholder="Producto...                                      🔍"
-            onChange={(e) => setSearch(e.target.value)}
-          />
+          {!loading ? (
+            <input
+              type="text"
+              className="w-[300px] rounded-lg hidden md:block"
+              placeholder="Producto...                                      🔍"
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          ) : (
+            ""
+          )}
         </div>
         {!loading ? (
           <button

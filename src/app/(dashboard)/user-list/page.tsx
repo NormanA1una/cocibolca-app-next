@@ -1,6 +1,7 @@
 "use client";
 
 import NoDataSuppliers from "@/components/NoDataSuppliers/NoDataSuppliers";
+import TableSkeleton from "@/components/TableSkeleton/TableSkeleton";
 import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
@@ -32,7 +33,6 @@ export default function UserList() {
   const [dataNotFound, setDataNotFound] = useState(false);
   const [loading, setLoading] = useState(true);
   const { data: session } = useSession();
-  const router = useRouter();
 
   useEffect(() => {
     getUsers()
@@ -100,7 +100,16 @@ export default function UserList() {
   return (
     <div className="flex flex-col flex-1 p-4 pt-20">
       <div className="animate__animated animate__fadeIn flex flex-col">
-        <h1 className="font-bold text-2xl mb-16">Lista de usuarios activos</h1>
+        {!loading ? (
+          <h1 className="font-bold text-2xl mb-16">
+            Lista de usuarios activos
+          </h1>
+        ) : (
+          <div
+            role="status"
+            className="w-[300px] mb-16 animate-pulse h-[15px] bg-gray-200 rounded-full dark:bg-gray-700"
+          ></div>
+        )}
       </div>
 
       <div className={`${"relative overflow-x-auto mt-8"} `}>
@@ -180,68 +189,13 @@ export default function UserList() {
                   </tr>
                 ))
               : Array.from({ length: 5 }).map((_, i) =>
-                  userData.length ? null : <TableSkeleton key={i} />
+                  userData.length ? null : <TableSkeleton n={4} key={i} />
                 )}
           </tbody>
         </table>
       </div>
 
-      {dataNotFound && <NoDataSuppliers />}
+      {dataNotFound && <NoDataSuppliers text="Usuarios" />}
     </div>
   );
 }
-
-const TableSkeleton = () => {
-  return (
-    <>
-      <tr
-        role="status"
-        className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 animate-pulse"
-      >
-        <th
-          scope="row"
-          className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-        >
-          <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
-        </th>
-        <td className="px-6 py-4">
-          <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
-        </td>
-        <td className="px-6 py-4">
-          <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
-        </td>
-        <td className="px-6 py-4">
-          <button
-            type="button"
-            className={"bg-red-600 p-2 text-neutral-50 rounded-md w-[200px]"}
-            disabled={true}
-          >
-            Estado
-          </button>
-        </td>
-        <td className="px-6 py-4">
-          <div className="flex justify-center">
-            <button
-              type="button"
-              className="bg-blue-700 p-3 rounded-md text-neutral-50 mr-4 w-[38px] h-[44px]"
-              disabled={true}
-            >
-              <FontAwesomeIcon
-                icon={faPenToSquare}
-                style={{ color: "#ffffff" }}
-              />
-            </button>
-
-            <button
-              type="button"
-              className="bg-red-700 p-3 rounded-md text-neutral-50 w-[36.25px] h-[44px]"
-              disabled={true}
-            >
-              <FontAwesomeIcon icon={faTrash} style={{ color: "#ffffff" }} />
-            </button>
-          </div>
-        </td>
-      </tr>
-    </>
-  );
-};

@@ -185,32 +185,67 @@ export default function Product() {
   return (
     <div className="flex flex-col flex-1 p-4 pt-6 md:pt-20">
       <div className="animate__animated animate__fadeIn flex flex-col">
-        <h1 className="font-bold text-2xl mb-10">Módulo de productos</h1>
-        <div className="flex justify-end">
-          <Link href={"/add-product"}>
-            <button
-              type="button"
-              className=" bg-gray-800 hover:bg-gray-900 text-neutralWhite p-3 rounded-md w-[200px] mb-3"
-            >
-              Agregar producto
-            </button>
-          </Link>
-        </div>
+        {!loading ? (
+          <>
+            <h1 className="font-bold text-2xl mb-10">Módulo de productos</h1>
+            <div className="flex justify-end">
+              <Link href={"/add-product"}>
+                <button
+                  type="button"
+                  className=" bg-gray-800 hover:bg-gray-900 text-neutralWhite p-3 rounded-md w-[200px] mb-3"
+                >
+                  Agregar producto
+                </button>
+              </Link>
+            </div>
+          </>
+        ) : (
+          <>
+            <div
+              role="status"
+              className="w-[300px] mb-16 animate-pulse h-[15px] bg-gray-200 rounded-full dark:bg-gray-700"
+            ></div>
+            <div className="flex justify-end">
+              <Link href={"/add-product"}>
+                <button
+                  type="button"
+                  className=" bg-gray-800 hover:bg-gray-900 text-neutralWhite p-3 rounded-md w-[200px] mb-3"
+                >
+                  <div
+                    role="status"
+                    className="w-[170px] mx-auto animate-pulse h-[15px] bg-gray-200 rounded-full dark:bg-gray-700"
+                  ></div>
+                </button>
+              </Link>
+            </div>
+          </>
+        )}
       </div>
 
-      <input
-        type="text"
-        className="w-[380px] md:hidden rounded-lg"
-        placeholder="Producto...                                                      🔍"
-        onChange={(e) => setSearch(e.target.value)}
-      />
+      {!loading ? (
+        <input
+          type="text"
+          className="w-[380px] md:hidden rounded-lg"
+          placeholder="Producto...                                                      🔍"
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      ) : (
+        <div
+          role="status"
+          className="w-[380px] animate-pulse h-[15px] bg-gray-200 rounded-full dark:bg-gray-700"
+        ></div>
+      )}
 
-      <input
-        type="text"
-        className="w-[300px] rounded-lg hidden md:block"
-        placeholder="Producto...                                      🔍"
-        onChange={(e) => setSearch(e.target.value)}
-      />
+      {!loading ? (
+        <input
+          type="text"
+          className="w-[300px] rounded-lg hidden md:block"
+          placeholder="Producto...                                      🔍"
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      ) : (
+        ""
+      )}
 
       <div className={`${"relative overflow-x-auto mt-3"} `}>
         <table className="w-full text-sm text-left text-gray-500 ">
@@ -381,66 +416,3 @@ export default function Product() {
     </div>
   );
 }
-
-/* const TableSkeleton = () => {
-  return (
-    <>
-      <tr
-        role="status"
-        className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 animate-pulse"
-      >
-        <th
-          scope="row"
-          className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-        >
-          <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
-        </th>
-        <td className="px-6 py-4">
-          <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
-        </td>
-        <td className="px-6 py-4">
-          <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
-        </td>
-        <td className="px-6 py-4">
-          <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
-        </td>
-        <td className="px-6 py-4">
-          <Image
-            src="/no-image-icon-23485.png"
-            alt="No image png"
-            width={50}
-            height={50}
-          ></Image>
-        </td>
-        <td className="px-6 py-4">
-          <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
-        </td>
-        <td className="px-6 py-4">
-          <div className="h-2.5 bg-gray-300 rounded-full dark:bg-gray-600 w-24 mb-2.5"></div>
-        </td>
-        <td className="px-6 py-4">
-          <div className="flex justify-center">
-            <button
-              type="button"
-              className="bg-blue-700 p-3 rounded-md text-neutral-50 mr-4 w-[38px] h-[44px]"
-              disabled={true}
-            >
-              <FontAwesomeIcon
-                icon={faPenToSquare}
-                style={{ color: "#ffffff" }}
-              />
-            </button>
-
-            <button
-              type="button"
-              className="bg-red-700 p-3 rounded-md text-neutral-50 w-[36.25px] h-[44px]"
-              disabled={true}
-            >
-              <FontAwesomeIcon icon={faTrash} style={{ color: "#ffffff" }} />
-            </button>
-          </div>
-        </td>
-      </tr>
-    </>
-  );
-}; */

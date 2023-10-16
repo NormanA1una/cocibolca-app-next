@@ -1,7 +1,11 @@
 import { FormControlLabel, Switch } from "@mui/material";
 import Image from "next/image";
 
-export default function FormSkeleton() {
+export default function FormSkeleton({
+  isUpdatePage,
+}: {
+  isUpdatePage: boolean;
+}) {
   return (
     <>
       <div className="w-full max-w-[700px] mx-auto text-right mb-4">
@@ -14,7 +18,13 @@ export default function FormSkeleton() {
           </button>
         </div>
       </div>
-      <form className="animate__animated animate__fadeIn bg-neutralWhite border-opacity-50 rounded p-5 w-full max-w-[700px] mx-auto shadow-sm h-screen md:h-[750px]">
+      <form
+        className={
+          isUpdatePage
+            ? "animate__animated animate__fadeIn bg-neutralWhite border-opacity-50 rounded p-5 w-full max-w-[700px] mx-auto shadow-sm h-[750px] md:h-[800px]"
+            : "animate__animated animate__fadeIn bg-neutralWhite border-opacity-50 rounded p-5 w-full max-w-[700px] mx-auto shadow-sm h-screen md:h-[750px]"
+        }
+      >
         <div className="w-full">
           <h1 className="bg-gray-300 rounded-full dark:bg-gray-600 w-[220px] h-[36px] my-8 mx-auto"></h1>
         </div>
@@ -48,6 +58,23 @@ export default function FormSkeleton() {
             required
           />
         </div>
+
+        {isUpdatePage && (
+          <div className="mb-6">
+            <label
+              htmlFor="tipoDeProducto"
+              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >
+              <div className="bg-gray-300 rounded-full dark:bg-gray-600 w-[220px] h-4"></div>
+            </label>
+            <input
+              type="text"
+              id="tipoDeProducto"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
+              required
+            />
+          </div>
+        )}
 
         <div className="mb-6 flex justify-end items-center">
           <div className="bg-gray-300 rounded-full dark:bg-gray-600 w-[220px] h-2.5"></div>

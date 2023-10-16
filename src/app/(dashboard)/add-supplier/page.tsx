@@ -379,7 +379,7 @@ export default function AddSupplier() {
           </form>
         </>
       ) : (
-        <FormSkeleton />
+        <FormSkeleton isUpdatePage={false} />
       )}
     </div>
   );

@@ -19,12 +19,13 @@ import { useForm, Controller } from "react-hook-form";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { storage } from "../../../../../firebaseConfig";
+import FormSkeleton from "@/components/FormSkeleton/FormSkeleton";
 
 const mySwal = withReactContent(Swal);
 
 export default function SupplierDetail({ params: { id } }: Params) {
   const [data, setData] = useState<SupplierForm | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSupplierActive, setIsSupplierActive] = useState(false);
   const { register, handleSubmit, reset, control, setValue } =
     useForm<SupplierForm>({
@@ -53,6 +54,7 @@ export default function SupplierDetail({ params: { id } }: Params) {
   };
 
   useEffect(() => {
+    setIsLoading(false);
     getSupplier()
       .then((responseData) => {
         setData(responseData);
@@ -234,215 +236,221 @@ export default function SupplierDetail({ params: { id } }: Params) {
 
   return (
     <div className="flex flex-col flex-1 justify-center p-4 pt-8">
-      <div className="w-full max-w-[700px] mx-auto text-right mb-4">
-        <Link href={"/suppliers"}>
-          <button
-            type="button"
-            className=" bg-red-600 rounded-md p-2 text-neutralWhite w-[100px]"
+      {!isLoading ? (
+        <>
+          <div className="w-full max-w-[700px] mx-auto text-right mb-4">
+            <Link href={"/suppliers"}>
+              <button
+                type="button"
+                className=" bg-red-600 rounded-md p-2 text-neutralWhite w-[100px]"
+              >
+                <FontAwesomeIcon
+                  icon={faArrowLeft}
+                  className=" text-neutralWhite mr-1"
+                />{" "}
+                Volver
+              </button>
+            </Link>
+          </div>
+          <form
+            className="animate__animated animate__fadeIn bg-neutralWhite border-opacity-50 rounded p-5 w-full max-w-[700px] mx-auto shadow-sm h-[900] md:h-[800px]"
+            onSubmit={handleSubmit(onSubmit)}
           >
-            <FontAwesomeIcon
-              icon={faArrowLeft}
-              className=" text-neutralWhite mr-1"
-            />{" "}
-            Volver
-          </button>
-        </Link>
-      </div>
-      <form
-        className="animate__animated animate__fadeIn bg-neutralWhite border-opacity-50 rounded p-5 w-full max-w-[700px] mx-auto shadow-sm h-[900] md:h-[800px]"
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <h1 className="text-center font-bold text-3xl my-8">
-          Actualizar proveedor
-        </h1>
-        <div className="mb-6">
-          <label
-            htmlFor="id"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >
-            ID
-          </label>
-          <input
-            type="number"
-            id="id"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
-            placeholder="Generado por la base de datos!"
-            disabled
-            {...register("id")}
-          />
-        </div>
-
-        <div className="mb-6">
-          <label
-            htmlFor="nombreProveedor"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >
-            Nombre del Proveedor
-          </label>
-          <input
-            type="text"
-            id="nombreProveedor"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
-            placeholder="compañia ejemplo S.A."
-            required
-            {...register("nombreProveedor")}
-          />
-        </div>
-
-        <div className="mb-6">
-          <label
-            htmlFor="tipoDeProducto"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >
-            Tipo del Producto
-          </label>
-          <input
-            type="text"
-            id="tipoDeProducto"
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
-            placeholder="Cerveza... Ron... Snacks..."
-            required
-            {...register("tipoDeProducto")}
-          />
-        </div>
-
-        <div className="mb-6 flex justify-end items-center">
-          <Controller
-            name="estado"
-            control={control}
-            defaultValue={isSupplierActive}
-            render={({ field }) => (
-              <FormControlLabel
-                control={
-                  <Switch
-                    {...field}
-                    checked={isSupplierActive}
-                    inputProps={{ type: "checkbox", role: "switch" }}
-                    color="success"
-                    size="medium"
-                    onChange={(e) => {
-                      field.onChange(e);
-                      onCheck(e);
-                    }}
-                  />
-                }
-                label={`Estado del proveedor: ${
-                  isSupplierActive ? "Activo" : "Inactivo"
-                }`}
-                labelPlacement="start"
+            <h1 className="text-center font-bold text-3xl my-8">
+              Actualizar proveedor
+            </h1>
+            <div className="mb-6">
+              <label
+                htmlFor="id"
+                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                ID
+              </label>
+              <input
+                type="number"
+                id="id"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
+                placeholder="Generado por la base de datos!"
+                disabled
+                {...register("id")}
               />
-            )}
-          />
-        </div>
+            </div>
 
-        <div className="mb-10">
-          <label
-            htmlFor="logo"
-            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-          >
-            Logo del Proveedor
-          </label>
-          {downloadUrl ? (
-            <>
-              <div className="h-[150px] flex items-center">
+            <div className="mb-6">
+              <label
+                htmlFor="nombreProveedor"
+                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Nombre del Proveedor
+              </label>
+              <input
+                type="text"
+                id="nombreProveedor"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
+                placeholder="compañia ejemplo S.A."
+                required
+                {...register("nombreProveedor")}
+              />
+            </div>
+
+            <div className="mb-6">
+              <label
+                htmlFor="tipoDeProducto"
+                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Tipo del Producto
+              </label>
+              <input
+                type="text"
+                id="tipoDeProducto"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 "
+                placeholder="Cerveza... Ron... Snacks..."
+                required
+                {...register("tipoDeProducto")}
+              />
+            </div>
+
+            <div className="mb-6 flex justify-end items-center">
+              <Controller
+                name="estado"
+                control={control}
+                defaultValue={isSupplierActive}
+                render={({ field }) => (
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        {...field}
+                        checked={isSupplierActive}
+                        inputProps={{ type: "checkbox", role: "switch" }}
+                        color="success"
+                        size="medium"
+                        onChange={(e) => {
+                          field.onChange(e);
+                          onCheck(e);
+                        }}
+                      />
+                    }
+                    label={`Estado del proveedor: ${
+                      isSupplierActive ? "Activo" : "Inactivo"
+                    }`}
+                    labelPlacement="start"
+                  />
+                )}
+              />
+            </div>
+
+            <div className="mb-10">
+              <label
+                htmlFor="logo"
+                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >
+                Logo del Proveedor
+              </label>
+              {downloadUrl ? (
+                <>
+                  <div className="h-[150px] flex items-center">
+                    <Image
+                      className="h-auto max-h-[150px] w-auto max-w-[150px]"
+                      src={downloadUrl}
+                      width={150}
+                      height={150}
+                      alt="Logo del Proveedor"
+                    />
+                  </div>
+                </>
+              ) : (
                 <Image
-                  className="h-auto max-h-[150px] w-auto max-w-[150px]"
-                  src={downloadUrl}
+                  src="/noImageFix.jpg"
+                  alt="No image png"
                   width={150}
                   height={150}
-                  alt="Logo del Proveedor"
+                  className="h-auto max-h-[150px] w-auto max-w-[150px]"
                 />
+              )}
+
+              <Progress percent={progressUpload} />
+
+              <div
+                className={
+                  isUploading
+                    ? "flex justify-center"
+                    : "flex flex-col md:flex-row h-[101px] md:h-auto"
+                }
+              >
+                {isUploading ? (
+                  <div className="flex">
+                    <div className="flex items-center">
+                      <input
+                        className="p-2 rounded-md border-gray-400 "
+                        type="hidden"
+                        {...register("nombreImage")}
+                        placeholder={imageFile?.name}
+                      />
+                    </div>
+                    <input
+                      className=" border-none"
+                      type="hidden"
+                      {...register("logo")}
+                      placeholder={downloadUrl}
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <input
+                      type="file"
+                      onChange={(files) => handleSelectedFile(files)}
+                    />
+                    <span className={!isUploading && "flex-1"}></span>
+                  </>
+                )}
+                {imageFile ? (
+                  <div className={isUploading ? "flex" : "flex justify-center"}>
+                    <div>
+                      <button
+                        hidden={!isUploading}
+                        type="button"
+                        className={
+                          !isUploading
+                            ? "p-2 bg-red-600 rounded-lg shadow text-neutralWhite mr"
+                            : "p-2 mb-[60px] md:mb-0 bg-red-600 rounded-lg shadow text-neutralWhite mr"
+                        }
+                        onClick={handleRemoveFile}
+                      >
+                        Remover Imagen
+                      </button>
+                    </div>
+
+                    <div>
+                      <button
+                        hidden={isUploading || buttonHidden}
+                        type="button"
+                        className="p-2 bg-accentPurple rounded-lg shadow text-neutralWhite mr-3"
+                        onClick={handleUploadFile}
+                      >
+                        Cargar Imagen
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  ""
+                )}
               </div>
-            </>
-          ) : (
-            <Image
-              src="/noImageFix.jpg"
-              alt="No image png"
-              width={150}
-              height={150}
-              className="h-auto max-h-[150px] w-auto max-w-[150px]"
-            />
-          )}
+            </div>
 
-          <Progress percent={progressUpload} />
-
-          <div
-            className={
-              isUploading
-                ? "flex justify-center"
-                : "flex flex-col md:flex-row h-[101px] md:h-auto"
-            }
-          >
-            {isUploading ? (
-              <div className="flex">
-                <div className="flex items-center">
-                  <input
-                    className="p-2 rounded-md border-gray-400 "
-                    type="hidden"
-                    {...register("nombreImage")}
-                    placeholder={imageFile?.name}
-                  />
-                </div>
-                <input
-                  className=" border-none"
-                  type="hidden"
-                  {...register("logo")}
-                  placeholder={downloadUrl}
-                />
-              </div>
-            ) : (
-              <>
-                <input
-                  type="file"
-                  onChange={(files) => handleSelectedFile(files)}
-                />
-                <span className={!isUploading && "flex-1"}></span>
-              </>
-            )}
-            {imageFile ? (
-              <div className={isUploading ? "flex" : "flex justify-center"}>
-                <div>
-                  <button
-                    hidden={!isUploading}
-                    type="button"
-                    className={
-                      !isUploading
-                        ? "p-2 bg-red-600 rounded-lg shadow text-neutralWhite mr"
-                        : "p-2 mb-[60px] md:mb-0 bg-red-600 rounded-lg shadow text-neutralWhite mr"
-                    }
-                    onClick={handleRemoveFile}
-                  >
-                    Remover Imagen
-                  </button>
-                </div>
-
-                <div>
-                  <button
-                    hidden={isUploading || buttonHidden}
-                    type="button"
-                    className="p-2 bg-accentPurple rounded-lg shadow text-neutralWhite mr-3"
-                    onClick={handleUploadFile}
-                  >
-                    Cargar Imagen
-                  </button>
-                </div>
-              </div>
-            ) : (
-              ""
-            )}
-          </div>
-        </div>
-
-        <div className=" text-center">
-          <button
-            disabled={isLoading}
-            type="submit"
-            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-[200px] px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          >
-            {isLoading ? "Actualizando..." : "Actualizar proveedor"}
-          </button>
-        </div>
-      </form>
+            <div className=" text-center">
+              <button
+                disabled={isLoading}
+                type="submit"
+                className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-[200px] px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              >
+                {isLoading ? "Actualizando..." : "Actualizar proveedor"}
+              </button>
+            </div>
+          </form>
+        </>
+      ) : (
+        <FormSkeleton isUpdatePage={true} />
+      )}
     </div>
   );
 }

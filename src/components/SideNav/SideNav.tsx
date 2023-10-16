@@ -3,11 +3,11 @@
 import { Sidebar } from "flowbite-react";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import {
-  faFacebook,
-  faGithub,
-  faLinkedin,
-} from "@fortawesome/free-brands-svg-icons";
+  faMapLocationDot,
+  faBookOpen,
+} from "@fortawesome/free-solid-svg-icons";
 import NavigationSideNav from "./NavigationSideNav";
 import Image from "next/image";
 
@@ -50,15 +50,13 @@ export default function SideNav() {
             <ul className="flex justify-around">
               <li className="hover:bg-accentPurple p-2.5 rounded-full">
                 <Link
-                  href={
-                    "https://www.facebook.com/norman.arandaluna?mibextid=2JQ9oc"
-                  }
+                  href={"https://maps.app.goo.gl/sjKBTEXM8FXRKZvR8"}
                   target="_blank"
                 >
                   <FontAwesomeIcon
-                    icon={faFacebook}
+                    icon={faMapLocationDot}
                     size="2xl"
-                    className=" text-blue-900 hover:text-neutralBlack"
+                    className=" text-blue-700 hover:text-neutralBlack"
                   />
                 </Link>
               </li>
@@ -69,13 +67,11 @@ export default function SideNav() {
               </li>
               <li className="hover:bg-accentPurple p-2.5 rounded-full">
                 <Link
-                  href={
-                    "https://www.linkedin.com/in/norman-aranda-luna-7294a3285"
-                  }
+                  href={"https://licoreriacocibolca.vercel.app/"}
                   target="_blank"
                 >
                   <FontAwesomeIcon
-                    icon={faLinkedin}
+                    icon={faBookOpen}
                     size="2xl"
                     className=" text-blue-700 hover:text-neutralBlack"
                   />

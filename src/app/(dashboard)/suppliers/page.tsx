@@ -171,17 +171,41 @@ export default function Suppliers() {
   return (
     <div className="flex flex-col flex-1 p-4 pt-20">
       <div className="animate__animated animate__fadeIn flex flex-col">
-        <h1 className="font-bold text-2xl mb-16">Módulo de proveedores</h1>
-        <div className="flex justify-end">
-          <Link href={"/add-supplier"}>
-            <button
-              type="button"
-              className=" bg-gray-800 hover:bg-gray-900 text-neutralWhite p-3 rounded-md w-[200px]"
-            >
-              Agregar proveedor
-            </button>
-          </Link>
-        </div>
+        {!loading ? (
+          <>
+            <h1 className="font-bold text-2xl mb-16">Módulo de proveedores</h1>
+            <div className="flex justify-end">
+              <Link href={"/add-supplier"}>
+                <button
+                  type="button"
+                  className=" bg-gray-800 hover:bg-gray-900 text-neutralWhite p-3 rounded-md w-[200px]"
+                >
+                  Agregar proveedor
+                </button>
+              </Link>
+            </div>
+          </>
+        ) : (
+          <>
+            <div
+              role="status"
+              className="w-[300px] mb-16 animate-pulse h-[15px] bg-gray-200 rounded-full dark:bg-gray-700"
+            ></div>
+            <div className="flex justify-end">
+              <Link href={"/add-supplier"}>
+                <button
+                  type="button"
+                  className=" bg-gray-800 hover:bg-gray-900 text-neutralWhite p-3 rounded-md w-[200px]"
+                >
+                  <div
+                    role="status"
+                    className="w-[170px] mx-auto animate-pulse h-[15px] bg-gray-200 rounded-full dark:bg-gray-700"
+                  ></div>
+                </button>
+              </Link>
+            </div>
+          </>
+        )}
       </div>
 
       <div className={`${"relative overflow-x-auto mt-8"} `}>
