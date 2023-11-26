@@ -293,7 +293,7 @@ export default function Product() {
                     <td className="px-6 py-4">{data.nombreProducto}</td>
                     <td className="px-6 py-4">{data.cantidadAMano}</td>
                     <td className="px-6 py-4">{data.cantidadContada}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 ">
                       {data.presentacion ? (
                         <Image
                           className="w-auto h-auto"

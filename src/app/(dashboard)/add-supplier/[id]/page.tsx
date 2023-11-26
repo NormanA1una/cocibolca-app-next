@@ -388,7 +388,7 @@ export default function SupplierDetail({ params: { id } }: Params) {
                       />
                     </div>
                     <input
-                      className=" border-none"
+                      className="border-none"
                       type="hidden"
                       {...register("logo")}
                       placeholder={downloadUrl}
